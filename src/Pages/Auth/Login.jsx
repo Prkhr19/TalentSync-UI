@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import Mainlayout from '../../layouts/Mainlayout'
 import { login } from '../../Services/AuthService'
 import api from '../../Api/Axios'
 import { Link, useNavigate } from 'react-router-dom'
@@ -48,7 +47,7 @@ const Login = () => {
       payload?.fullName ||
       payload?.userName ||
       payload?.username ||
-      payload?.recruiter?.name ||
+      payload?.admin?.name ||
       payload?.user?.name ||
       payload?.user?.fullName ||
       payload?.data?.name ||
@@ -91,8 +90,8 @@ const Login = () => {
     if(normalizedRole === "CANDIDATE"){
       navigate(ROUTES.CANDIDATE_DASHBOARD)
     }
-    else if(normalizedRole === "RECRUITER"){
-      navigate(ROUTES.RECRUITER_DASHBOARD)
+    else if (normalizedRole === 'ADMIN') {
+      navigate(ROUTES.ADMIN_DASHBOARD)
     } else {
       navigate(ROUTES.HOME)
     }
@@ -103,12 +102,11 @@ const Login = () => {
 
 }
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-12 text-slate-900 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <section className="max-w-xl">
             <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1 text-sm font-medium text-sky-700">
-              Welcome back to HireHub
+              Welcome back to TalentSync
             </span>
             <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
               Sign in to continue with a calm, focused workspace.
@@ -123,8 +121,8 @@ const Login = () => {
                 <p className="mt-2 text-sm leading-6 text-slate-700">Track jobs, applications, and profile updates in one place.</p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur">
-                <p className="text-sm font-medium text-slate-500">Recruiter access</p>
-                <p className="mt-2 text-sm leading-6 text-slate-700">Review applicants and manage listings with less clutter.</p>
+                <p className="text-sm font-medium text-slate-500">Admin access</p>
+                <p className="mt-2 text-sm leading-6 text-slate-700">Manage jobs, candidates, applications, and referrals.</p>
               </div>
             </div>
           </section>
@@ -183,7 +181,7 @@ const Login = () => {
               </form>
 
               <p className="mt-6 text-center text-sm text-slate-600">
-                New to HireHub?{' '}
+                New to TalentSync?{' '}
                 <Link to={ROUTES.SIGNUP} className="font-semibold text-slate-900 transition hover:text-slate-600">
                   Create an account
                 </Link>
@@ -192,8 +190,6 @@ const Login = () => {
           </section>
         </div>
       </main>
-    </Mainlayout>
-
   )
 }
 

@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Mainlayout from '../../layouts/Mainlayout'
 import { ROUTES } from '../../Routes/Routes'
-import { createCompany } from '../../Services/RecruiterService'
+import { createCompany } from '../../Services/AdminService'
 
 const initialCompanyData = {
   companyName: '',
@@ -43,9 +42,9 @@ const CreateCompany = () => {
 
     try {
       await createCompany(companyData)
-      localStorage.setItem('recruiterCompanyName', companyData.companyName)
-      localStorage.setItem('recruiterCompanyLocation', companyData.location)
-      localStorage.setItem('recruiterCompanyWebsite', companyData.website)
+      localStorage.setItem('adminCompanyName', companyData.companyName)
+      localStorage.setItem('adminCompanyLocation', companyData.location)
+      localStorage.setItem('adminCompanyWebsite', companyData.website)
       setSuccess('Your company profile has been saved successfully.')
     } catch (requestError) {
       const status = requestError?.response?.status
@@ -63,15 +62,14 @@ const CreateCompany = () => {
   }
 
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <Link
-            to={ROUTES.RECRUITER_DASHBOARD}
+            to={ROUTES.ADMIN_DASHBOARD}
             className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
           >
             <span aria-hidden="true">←</span>
-            Back to recruiter dashboard
+            Back to admin dashboard
           </Link>
 
           <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_360px] lg:items-start">
@@ -181,7 +179,7 @@ const CreateCompany = () => {
 
                 <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-end">
                   <Link
-                    to={ROUTES.RECRUITER_DASHBOARD}
+                    to={ROUTES.ADMIN_DASHBOARD}
                     className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950"
                   >
                     Cancel
@@ -235,7 +233,6 @@ const CreateCompany = () => {
           </div>
         </div>
       </main>
-    </Mainlayout>
   )
 }
 

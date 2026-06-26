@@ -1,4 +1,3 @@
-import Mainlayout from '../layouts/Mainlayout'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../Routes/Routes'
 
@@ -16,8 +15,8 @@ const highlights = [
     description: 'Keep tabs on application progress without losing important updates.',
   },
   {
-    title: 'Recruiter-friendly tools',
-    description: 'Post jobs and manage applicants with a workspace that stays organized.',
+    title: 'Admin-friendly tools',
+    description: 'Post jobs and manage candidates with a workspace that stays organized.',
   },
 ]
 
@@ -29,19 +28,18 @@ const stats = [
 
 const Home = () => {
   return (
-    <Mainlayout>
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.45),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] text-slate-900">
+      <main className="bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.45),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] text-slate-900">
         <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
               <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1 text-sm font-medium text-sky-700">
-                Clean hiring experience for candidates and recruiters
+                Get referred to top companies
               </span>
               <h1 className="mt-6 max-w-2xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
                 Find the right role without the clutter.
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
-                HireHub brings job seekers and employers together in a simple, focused workspace.
+                TalentSync brings job seekers and employers together in a simple, focused workspace.
                 Search jobs, manage applications, and move through the hiring process with less noise.
               </p>
 
@@ -99,8 +97,8 @@ const Home = () => {
                       <p className="mt-2 text-base font-semibold text-slate-900">Fast, simple applications</p>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-sm font-medium text-slate-500">For recruiters</p>
-                      <p className="mt-2 text-base font-semibold text-slate-900">Clear applicant tracking</p>
+                      <p className="text-sm font-medium text-slate-500">For admins</p>
+                      <p className="mt-2 text-base font-semibold text-slate-900">Clear candidate tracking</p>
                     </div>
                   </div>
                 </div>
@@ -120,7 +118,7 @@ const Home = () => {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
+        <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
           <div className="rounded-[2rem] bg-slate-900 px-6 py-10 text-white shadow-xl shadow-slate-900/15 sm:px-10">
             <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
               <div>
@@ -129,7 +127,7 @@ const Home = () => {
                   Set up your profile and start moving.
                 </h2>
                 <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                  Join HireHub, build a tidy profile, and browse opportunities in a cleaner workflow.
+                  Join TalentSync, build a tidy profile, and browse opportunities in a cleaner workflow.
                 </p>
               </div>
 
@@ -151,9 +149,6 @@ const Home = () => {
           </div>
         </section>
       </main>
-            
-
-    </Mainlayout>
   )
 }
 

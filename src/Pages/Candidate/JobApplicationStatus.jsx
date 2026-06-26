@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getApplicationStatus } from '../../Services/CandidateService'
-import Mainlayout from '../../layouts/Mainlayout'
 import { ROUTES } from '../../Routes/Routes'
 
 const getStatusLabel = (status) => String(status || 'Pending').toLowerCase().split('_').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
 
 const getStatusTone = (status) => {
   const normalized = String(status || '').toUpperCase()
-  if (['APPROVED', 'HIRED', 'SHORTLISTED'].includes(normalized)) return 'bg-emerald-50 text-emerald-700 border-emerald-200'
-  if (['REJECTED', 'WITHDRAWN'].includes(normalized)) return 'bg-rose-50 text-rose-700 border-rose-200'
-  if (normalized === 'INTERVIEW_SCHEDULED') return 'bg-violet-50 text-violet-700 border-violet-200'
-  return 'bg-amber-50 text-amber-700 border-amber-200'
+  if (['SELECTED', 'SHORTLISTED', 'REFERRED'].includes(normalized)) return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  if (normalized === 'REJECTED') return 'bg-rose-50 text-rose-700 border-rose-200'
+  if (normalized === 'INTERVIEW') return 'bg-violet-50 text-violet-700 border-violet-200'
+  if (normalized === 'SCREENING') return 'bg-sky-50 text-sky-700 border-sky-200'
+  if (normalized === 'APPLIED') return 'bg-amber-50 text-amber-700 border-amber-200'
+  return 'bg-slate-50 text-slate-700 border-slate-200'
 }
 
 const getPostedDate = (date) => {
@@ -28,7 +29,7 @@ const getCompanyName = (application) => {
     application.companyName ||
     application.company_name ||
     application.employerName ||
-    application.recruiterCompanyName ||
+    application.adminCompanyName ||
     (typeof company === 'string' ? company : company?.companyName || company?.name) ||
     application.job?.companyName ||
     application.job?.company_name ||
@@ -72,7 +73,6 @@ const JobApplicationStatus = () => {
   }
 
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl space-y-8">
           <section className="rounded-[2rem] border border-white/80 bg-white/90 p-7 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur sm:p-8">
@@ -133,7 +133,6 @@ const JobApplicationStatus = () => {
           )}
         </div>
       </main>
-    </Mainlayout>
   )
 }
 

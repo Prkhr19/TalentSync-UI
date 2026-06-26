@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getAllJobs } from '../../Services/JobService'
 import JobCard from '../../Components/JobCard'
-import Mainlayout from '../../layouts/Mainlayout'
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([])
@@ -32,7 +31,6 @@ const Jobs = () => {
   }
 
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <section className="rounded-[2rem] border border-white/80 bg-white/90 p-7 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur sm:p-8">
@@ -108,7 +106,6 @@ const Jobs = () => {
           )}
         </div>
       </main>
-    </Mainlayout>
   )
 }
 

@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Mainlayout from '../../layouts/Mainlayout'
 import { ROUTES } from '../../Routes/Routes'
 
-const getRecruiterName = () => {
+const getAdminName = () => {
   const storedName = localStorage.getItem('userName')
   if (storedName) return storedName
 
@@ -22,19 +21,19 @@ const getRecruiterName = () => {
     // The login flow stores the name when the token does not contain profile data.
   }
 
-  return 'Recruiter'
+  return 'Admin'
 }
 
 const RDashBoard = () => {
   const [activeSlide, setActiveSlide] = useState(0)
 
-  const recruiterName = getRecruiterName()
-  const recruiterEmail = localStorage.getItem('userEmail') || 'Add your account email'
+  const adminName = getAdminName()
+  const adminEmail = localStorage.getItem('userEmail') || 'Add your account email'
 
   const companySlides = [
     {
       title: 'Account overview',
-      content: `Name: ${recruiterName}\nEmail: ${recruiterEmail}\nRole: Recruiter`,
+      content: `Name: ${adminName}\nEmail: ${adminEmail}\nRole: Admin`,
     },
     {
       title: 'Hiring workspace',
@@ -72,7 +71,21 @@ const RDashBoard = () => {
       title: 'Review jobs and applicants',
       description: 'Open your published jobs to review and manage incoming applications.',
       path: ROUTES.VIEW_JOBS,
-      action: 'View my jobs',
+      action: 'View jobs',
+    },
+    {
+      number: '04',
+      title: 'Browse candidate database',
+      description: 'Search and filter candidates by skills, experience, and location.',
+      path: ROUTES.ADMIN_CANDIDATES,
+      action: 'View candidates',
+    },
+    {
+      number: '05',
+      title: 'Track referrals',
+      description: 'Review referral history and monitor candidate placements.',
+      path: ROUTES.ADMIN_REFERRALS,
+      action: 'View referrals',
     },
   ]
 
@@ -85,13 +98,12 @@ const RDashBoard = () => {
   }
 
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[320px_1fr]">
           <aside className="rounded-[2rem] border border-white/80 bg-white/90 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur lg:sticky lg:top-6 lg:h-fit">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Recruiter profile</p>
-            <h2 className="mt-3 text-2xl font-semibold text-slate-950">{recruiterName}</h2>
-            <p className="mt-1 truncate text-sm text-slate-500">{recruiterEmail}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Admin profile</p>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-950">{adminName}</h2>
+            <p className="mt-1 truncate text-sm text-slate-500">{adminEmail}</p>
 
             <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-center justify-between">
@@ -127,10 +139,10 @@ const RDashBoard = () => {
             </div>
 
             <Link
-              to={ROUTES.CREATE_COMPANY}
+              to={ROUTES.ADMIN_SETTINGS}
               className="mt-5 inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950"
             >
-              Manage Company
+              Manage Settings
             </Link>
           </aside>
 
@@ -138,7 +150,7 @@ const RDashBoard = () => {
             <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch">
               <div className="rounded-[2rem] border border-white/80 bg-white/90 p-7 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur sm:p-8">
                 <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1 text-sm font-medium text-sky-700">
-                  Recruiter dashboard
+                  Admin dashboard
                 </span>
                 <h1 className="mt-5 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
                   Build your hiring pipeline in one calm workspace.
@@ -235,7 +247,6 @@ const RDashBoard = () => {
           </div>
         </div>
       </main>
-    </Mainlayout>
   )
 }
 

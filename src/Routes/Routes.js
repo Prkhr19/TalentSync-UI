@@ -1,18 +1,24 @@
-export const ROUTES={
-    HOME:'/',
-    JOBS:'/jobs',
-    LOGIN:'/login',
-    SIGNUP:'/signup',
-    CANDIDATE_DASHBOARD:'/candidate/dashboard',
-    RECRUITER_DASHBOARD:'/recruiter/dashboard',
-    JOB_DETAILSBYID:'/job/:id',
-    UPDATE_PROFILE:'/candidate/profile',
-    APPPLICATION_STATUS: '/candidate/applicationStatus',
-    CREATE_COMPANY: '/recruiter/company',
-    CREATE_JOB: '/recruiter/jobs',
-    APPLY_JOBS: '/candidate/jobs/:jobId/apply',
-    JOB_APPLICATIONS: '/recruiter/job/:jobId/applications',
-    VIEW_JOBS: '/recruiter/myJobs'
-    
-
-};
+export const ROUTES = {
+  HOME: '/',
+  JOBS: '/jobs',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
+  CANDIDATE_DASHBOARD: '/candidate/dashboard',
+  ADMIN_DASHBOARD: '/admin/dashboard',
+  JOB_DETAILSBYID: '/job/:id',
+  UPDATE_PROFILE: '/candidate/profile',
+  APPPLICATION_STATUS: '/candidate/applicationStatus',
+  CANDIDATE_REFERRALS: '/candidate/referrals',
+  CREATE_COMPANY: '/admin/company',
+  CREATE_JOB: '/admin/jobs/create',
+  APPLY_JOBS: '/candidate/jobs/:jobId/apply',
+  JOB_APPLICATIONS: '/admin/job/:jobId/applications',
+  VIEW_JOBS: '/admin/jobs',
+  ADMIN_CANDIDATES: '/admin/candidates',
+  ADMIN_APPLICATIONS: '/admin/applications',
+  ADMIN_REFERRALS: '/admin/referrals',
+  ADMIN_SETTINGS: '/admin/settings',
+  PRIVACY_POLICY: '/privacy-policy',
+  TERMS_AND_CONDITIONS: '/terms-and-conditions',
+  CONTACT: '/contact',
+}

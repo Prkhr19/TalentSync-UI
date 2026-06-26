@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Mainlayout from '../../layouts/Mainlayout'
 import { ROUTES } from '../../Routes/Routes'
 
 const CDashboard = () => {
@@ -11,7 +10,7 @@ const CDashboard = () => {
   ]
 
   const nextSteps = [
-    'Finish your profile to improve recruiter visibility.',
+    'Finish your profile to improve visibility with hiring teams.',
     'Apply to two new roles today to keep momentum going.',
     'Check application status for any pending responses.',
   ]
@@ -49,7 +48,6 @@ const CDashboard = () => {
   }
 
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[320px_1fr]">
           <aside className="rounded-[2rem] border border-white/80 bg-white/90 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur lg:sticky lg:top-6 lg:h-fit">
@@ -123,6 +121,12 @@ const CDashboard = () => {
                   >
                     Update Profile
                   </Link>
+                  <Link
+                    to={ROUTES.CANDIDATE_REFERRALS}
+                    className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950"
+                  >
+                    View Referrals
+                  </Link>
                 </div>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -188,7 +192,6 @@ const CDashboard = () => {
           </div>
         </div>
       </main>
-    </Mainlayout>
   )
 }
 

@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Mainlayout from '../../layouts/Mainlayout'
 import { ROUTES } from '../../Routes/Routes'
-import { createJob } from '../../Services/RecruiterService'
+import { createJob } from '../../Services/AdminService'
 
 const initialJobData = {
   title: '',
@@ -61,7 +60,6 @@ const CreateJob = () => {
   }
 
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <Link
@@ -265,7 +263,6 @@ const CreateJob = () => {
           </div>
         </div>
       </main>
-    </Mainlayout>
   )
 }
 

@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import Mainlayout from '../../layouts/Mainlayout'
 import { ROUTES } from '../../Routes/Routes'
-import { jobApplicationsByJobId, updateApplicationStatus } from '../../Services/RecruiterService'
+import { jobApplicationsByJobId, updateApplicationStatus } from '../../Services/AdminService'
 
 const statusOptions = [
-  { value: 'WITHDRAWN', label: 'Pending' },
-  { value: 'INTERVIEW_SCHEDULED', label: 'Schedule Interview' },
-  { value: 'HIRED', label: 'Accept Candidate' },
-  { value: 'REJECTED', label: 'Reject Candidate' },
+  { value: 'APPLIED', label: 'Applied' },
+  { value: 'SCREENING', label: 'Screening' },
+  { value: 'SHORTLISTED', label: 'Shortlisted' },
+  { value: 'REFERRED', label: 'Referred' },
+  { value: 'INTERVIEW', label: 'Interview' },
+  { value: 'SELECTED', label: 'Selected' },
+  { value: 'REJECTED', label: 'Rejected' },
 ]
 
 const getStatusLabel = (status) => {
@@ -18,13 +20,16 @@ const getStatusLabel = (status) => {
 
 const getStatusStyle = (status) => {
   const styles = {
-    HIRED: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+    APPLIED: 'border-amber-200 bg-amber-50 text-amber-700',
+    SCREENING: 'border-sky-200 bg-sky-50 text-sky-700',
+    SHORTLISTED: 'border-cyan-200 bg-cyan-50 text-cyan-700',
+    REFERRED: 'border-indigo-200 bg-indigo-50 text-indigo-700',
+    INTERVIEW: 'border-violet-200 bg-violet-50 text-violet-700',
+    SELECTED: 'border-emerald-200 bg-emerald-50 text-emerald-700',
     REJECTED: 'border-rose-200 bg-rose-50 text-rose-700',
-    INTERVIEW_SCHEDULED: 'border-violet-200 bg-violet-50 text-violet-700',
-    WITHDRAWN: 'border-amber-200 bg-amber-50 text-amber-700',
   }
 
-  return styles[status] || styles.WITHDRAWN
+  return styles[status] || styles.APPLIED
 }
 
 const formatDate = (date) => {
@@ -130,7 +135,6 @@ const ViewApplications = () => {
   }
 
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <section className="rounded-[2rem] border border-white/80 bg-white/90 p-7 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur sm:p-8">
@@ -215,7 +219,7 @@ const ViewApplications = () => {
           {!loading && !error && applications.length > 0 && (
             <section className="mt-8 grid gap-5 lg:grid-cols-2">
               {applications.map((application) => {
-                const selectedStatus = selectedState[application.applicationId] ?? application.status ?? 'WITHDRAWN'
+                const selectedStatus = selectedState[application.applicationId] ?? application.status ?? 'APPLIED'
                 const applicationFeedback = feedback[application.applicationId]
                 const isSaving = savingId === application.applicationId
 
@@ -258,9 +262,9 @@ const ViewApplications = () => {
                     </div>
 
                     <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                      {application.resumeUrl ? (
+                      {application.resumeUrl || application.resumePath ? (
                         <a
-                          href={application.resumeUrl}
+                          href={application.resumeUrl || application.resumePath}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950"
@@ -314,7 +318,6 @@ const ViewApplications = () => {
           )}
         </div>
       </main>
-    </Mainlayout>
   )
 }
 

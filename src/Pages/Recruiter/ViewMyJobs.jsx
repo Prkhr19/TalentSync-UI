@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Mainlayout from '../../layouts/Mainlayout'
 import { ROUTES } from '../../Routes/Routes'
-import { myJobs } from '../../Services/RecruiterService'
+import { getAdminJobs } from '../../Services/AdminService'
 
 const formatLabel = (value) => {
   if (!value) return 'Not specified'
@@ -33,7 +32,7 @@ const ViewMyJobs = () => {
   const [loading, setLoading] = useState(true)
 
   const fetchMyJobs = () => {
-    myJobs()
+    getAdminJobs()
       .then((data) => {
         const jobList = Array.isArray(data) ? data : data?.jobs || data?.content || []
         setJobs(jobList)
@@ -52,7 +51,7 @@ const ViewMyJobs = () => {
   }
 
   useEffect(() => {
-    myJobs()
+    getAdminJobs()
       .then((data) => {
         const jobList = Array.isArray(data) ? data : data?.jobs || data?.content || []
         setJobs(jobList)
@@ -65,18 +64,17 @@ const ViewMyJobs = () => {
   }, [])
 
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <section className="rounded-[2rem] border border-white/80 bg-white/90 p-7 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur sm:p-8">
             <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <div>
                 <Link
-                  to={ROUTES.RECRUITER_DASHBOARD}
+                  to={ROUTES.ADMIN_DASHBOARD}
                   className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
                 >
                   <span aria-hidden="true">←</span>
-                  Recruiter dashboard
+                  Admin dashboard
                 </Link>
                 <span className="mt-6 flex w-fit items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1 text-sm font-medium text-sky-700">
                   Hiring workspace
@@ -191,7 +189,7 @@ const ViewMyJobs = () => {
                     </div>
 
                     <Link
-                      to={`/recruiter/job/${job.id}/applications`}
+                      to={`/admin/job/${job.id}/applications`}
                       className="mt-6 inline-flex w-full items-center justify-between rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-slate-700"
                     >
                       View Applications
@@ -204,7 +202,6 @@ const ViewMyJobs = () => {
           )}
         </div>
       </main>
-    </Mainlayout>
   )
 }
 

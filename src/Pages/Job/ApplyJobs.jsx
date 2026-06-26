@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { applyJobs } from '../../Services/JobService'
-import Mainlayout from '../../layouts/Mainlayout'
 import { ROUTES } from '../../Routes/Routes'
 
 const ApplyJobs = () => {
@@ -34,7 +33,6 @@ const ApplyJobs = () => {
     }
 
     return (
-    <Mainlayout>
         <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
             <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-start">
                 <section className="rounded-[2rem] border border-white/80 bg-white/90 p-7 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur sm:p-8">
@@ -96,7 +94,7 @@ const ApplyJobs = () => {
                             </div>
                             <div className="rounded-2xl border border-slate-700 bg-white/5 p-4">
                                 <p className="text-sm text-slate-300">2. Resume</p>
-                                <p className="mt-2 text-sm leading-6 text-slate-300">Use a resume link that recruiters can open easily.</p>
+                                <p className="mt-2 text-sm leading-6 text-slate-300">Upload a PDF resume as part of your profile.</p>
                             </div>
                             <div className="rounded-2xl border border-slate-700 bg-white/5 p-4">
                                 <p className="text-sm text-slate-300">3. Submit</p>
@@ -107,7 +105,6 @@ const ApplyJobs = () => {
                 </aside>
             </div>
         </main>
-    </Mainlayout>
   )
 }
 

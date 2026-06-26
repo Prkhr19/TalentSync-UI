@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getJobById } from '../../Services/JobService'
 import { ROUTES } from '../../Routes/Routes'
-import Mainlayout from '../../layouts/Mainlayout'
 
 const formatLabel = (value) => {
   if (!value) return 'Full Time'
@@ -45,7 +44,6 @@ const JobDetails = () => {
   const postedDate = job?.postedAt ? new Date(job.postedAt).toLocaleDateString('en-IN') : 'Recently'
 
   return (
-    <Mainlayout>
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <Link to={ROUTES.JOBS} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900">
@@ -130,7 +128,7 @@ const JobDetails = () => {
                     <div className="rounded-2xl border border-slate-700 bg-white/5 p-4"><p className="text-sm text-slate-300">Company</p><p className="mt-2 text-lg font-semibold">{job.companyName || 'Hiring company'}</p></div>
                     <div className="rounded-2xl border border-slate-700 bg-white/5 p-4"><p className="text-sm text-slate-300">Role type</p><p className="mt-2 text-lg font-semibold">{formatLabel(getJobType(job))}</p></div>
                     {getExperience(job) && <div className="rounded-2xl border border-slate-700 bg-white/5 p-4"><p className="text-sm text-slate-300">Experience</p><p className="mt-2 text-lg font-semibold">{getExperience(job)}</p></div>}
-                    <div className="rounded-2xl border border-slate-700 bg-white/5 p-4"><p className="text-sm text-slate-300">Application tip</p><p className="mt-2 text-sm leading-6 text-slate-300">Make sure your candidate profile and resume link are current before applying.</p></div>
+                    <div className="rounded-2xl border border-slate-700 bg-white/5 p-4"><p className="text-sm text-slate-300">Application tip</p><p className="mt-2 text-sm leading-6 text-slate-300">Make sure your candidate profile and resume PDF are current before applying.</p></div>
                   </div>
                 </div>
               </aside>
@@ -138,7 +136,6 @@ const JobDetails = () => {
           )}
         </div>
       </main>
-    </Mainlayout>
   )
 }
 
