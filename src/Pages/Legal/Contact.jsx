@@ -47,6 +47,16 @@ const Contact = () => {
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-sm font-medium text-slate-500">Contact numbers</p>
+                <a href="tel:+916265152390" className="mt-2 block text-base font-semibold text-slate-900">
+                  +91 6265152390
+                </a>
+                <a href="tel:+917898135344" className="mt-2 block text-base font-semibold text-slate-900">
+                  +91 7898135344
+                </a>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
                 <p className="text-sm font-medium text-slate-500">LinkedIn</p>
                 <a
                   href="https://www.linkedin.com/in/prakhar-shri"
