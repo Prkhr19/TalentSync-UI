@@ -38,7 +38,27 @@ const AdminCandidates = () => {
   }
 
   useEffect(() => {
-    loadCandidates()
+    let cancelled = false
+
+    const fetchInitial = async () => {
+      try {
+        const data = await getCandidates()
+        if (cancelled) return
+        const list = Array.isArray(data) ? data : data?.candidates || data?.content || []
+        setCandidates(list)
+      } catch (requestError) {
+        if (cancelled) return
+        console.error('Error fetching candidates:', requestError)
+        setError('Unable to load candidates. Please try again.')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    fetchInitial()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const handleFilterChange = (event) => {

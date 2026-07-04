@@ -21,9 +21,9 @@ import AdminApplications from './Pages/Recruiter/AdminApplications.jsx'
 import AdminReferrals from './Pages/Recruiter/AdminReferrals.jsx'
 import AdminSettings from './Pages/Recruiter/AdminSettings.jsx'
 import CandidateReferrals from './Pages/Candidate/CandidateReferrals.jsx'
-// import PrivacyPolicy from './Pages/Legal/PrivacyPolicy.jsx'
-// import TermsAndConditions from './Pages/Legal/TermsAndConditions.jsx'
-// import Contact from './Pages/Legal/Contact.jsx'
+import PrivacyPolicy from './Pages/Legal/PrivacyPolicy.jsx'
+import TermsAndConditions from './Pages/Legal/TermsAndConditions.jsx'
+import Contact from './Pages/Legal/Contact.jsx'
 
 const App = () => {
   return (
