@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
-import { usePageMeta } from '../../Utils/usePageMeta'
+import { usePageMeta } from '../../utils/usePageMeta'
 
 const PrivacyPolicy = () => {
   usePageMeta(
