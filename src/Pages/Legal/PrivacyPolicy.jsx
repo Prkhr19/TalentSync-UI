@@ -1,19 +1,19 @@
-import { Link } from 'react-router-dom'
-import { ROUTES } from '../../Routes/Routes'
-import { usePageMeta } from '../../utils/usePageMeta'
+  import { Link } from 'react-router-dom'
+  import { ROUTES } from '../../Routes/Routes'
+  import { usePageMeta } from '../../utils/usePageMeta'
 
-const PrivacyPolicy = () => {
-  usePageMeta(
-    'Privacy Policy | TalentSync',
-    'Learn how TalentSync collects, uses, stores, and protects candidate information for recruitment and referral services.'
-  )
+  const PrivacyPolicy = () => {
+    usePageMeta(
+      'Privacy Policy | TalentSync',
+      'Learn how TalentSync collects, uses, stores, and protects candidate information for recruitment and referral services.'
+    )
 
-  return (
-      <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mx-auto max-w-4xl">
-          <section className="rounded-[2rem] border border-white/80 bg-white/90 p-7 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur sm:p-10">
-            <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1 text-sm font-medium text-sky-700">
-              Legal
+    return (
+        <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
+          <div className="mx-auto max-w-4xl">
+            <section className="rounded-[2rem] border border-white/80 bg-white/90 p-7 shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur sm:p-10">
+              <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1 text-sm font-medium text-sky-700">
+                Legal
             </span>
             <h1 className="mt-5 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
               Privacy Policy
