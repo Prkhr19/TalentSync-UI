@@ -26,7 +26,10 @@ const JobApplicationStatus = () => {
     getApplicationStatus()
       .then((data) => setApplications(Array.isArray(data) ? data : data?.applications || data?.content || []))
       .catch((requestError) => {
-        setError('Unable to fetch job applications at this moment.')
+        const message = requestError.response?.status === 401
+          ? 'Your session expired. Please log in again.'
+          : 'Unable to fetch job applications at this moment.'
+        setError(message)
         console.error('Error fetching applications: ', requestError)
       })
       .finally(() => setLoading(false))
@@ -38,7 +41,10 @@ const JobApplicationStatus = () => {
     getApplicationStatus()
       .then((data) => setApplications(Array.isArray(data) ? data : data?.applications || data?.content || []))
       .catch((requestError) => {
-        setError('Unable to fetch job applications at this moment.')
+        const message = requestError.response?.status === 401
+          ? 'Your session expired. Please log in again.'
+          : 'Unable to fetch job applications at this moment.'
+        setError(message)
         console.error('Error fetching applications: ', requestError)
       })
       .finally(() => setLoading(false))

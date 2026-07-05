@@ -72,6 +72,11 @@ const mapCandidateSearchParams = (params = {}) => {
   return mapped
 }
 
+export const getJobApplications = async (jobId) => {
+  const response = await api.get(`/admin/jobs/${jobId}/applications`)
+  return response.data?.data || response.data
+}
+
 export const getCandidates = async (params = {}) => {
   const response = await api.get('/admin/candidates', { params: mapCandidateSearchParams(params) })
   return response.data

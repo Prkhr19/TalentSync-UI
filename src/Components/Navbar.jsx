@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../Routes/Routes'
+import { clearAuthSession } from '../Api/Axios'
 
 const adminLinks = [
   { label: 'Dashboard', path: ROUTES.ADMIN_DASHBOARD },
@@ -21,17 +22,7 @@ const Navbar = () => {
   const dashboardPath = isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.CANDIDATE_DASHBOARD
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
-    localStorage.removeItem('userEmail')
-    localStorage.removeItem('userName')
-    localStorage.removeItem('candidateEmail')
-    localStorage.removeItem('candidateName')
-    localStorage.removeItem('candidateEducation')
-    localStorage.removeItem('candidateSkills')
-    localStorage.removeItem('adminCompanyName')
-    localStorage.removeItem('adminCompanyLocation')
-    localStorage.removeItem('adminCompanyWebsite')
+    clearAuthSession()
     navigate(ROUTES.LOGIN)
   }
 

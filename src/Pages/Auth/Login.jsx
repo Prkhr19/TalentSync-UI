@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { login } from '../../Services/AuthService'
-import api from '../../Api/Axios'
-import { Link, useNavigate } from 'react-router-dom'
+import { setAuthSession } from '../../Api/Axios'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
 
 const getTokenPayload = (token) => {
@@ -19,6 +19,10 @@ const Login = () => {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const sessionMessage = searchParams.get('session') === 'expired'
+    ? 'Your session expired. Please log in again.'
+    : ''
 
   const submitHandler = async (e) => {
     e.preventDefault()
@@ -66,8 +70,7 @@ const Login = () => {
 
     const normalizedRole = String(role).toUpperCase()
 
-    localStorage.setItem("token", token);
-    localStorage.setItem("role", normalizedRole);
+    setAuthSession(token, normalizedRole)
     localStorage.setItem("userEmail", email);
     if (name) {
       localStorage.setItem("userName", name);
@@ -82,8 +85,6 @@ const Login = () => {
         localStorage.setItem("candidateName", name);
       }
     }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`
 
     if(normalizedRole === "CANDIDATE"){
       navigate(ROUTES.CANDIDATE_DASHBOARD)
@@ -135,9 +136,9 @@ const Login = () => {
                 </p>
               </div>
 
-              {error && (
+              {(sessionMessage || error) && (
                 <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                  {error}
+                  {sessionMessage || error}
                 </div>
               )}
 
