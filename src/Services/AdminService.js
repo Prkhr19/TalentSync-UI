@@ -5,12 +5,12 @@ export const getCompanies = async () => {
   return response.data?.data || response.data
 }
 
-export const createCompany = async (companyData) => {
+export const createCompany = async ({ companyName, location, website, description }) => {
   const response = await api.post('/admin/companies', {
-    companyName: companyData.companyName,
-    location: companyData.location,
-    website: companyData.website,
-    description: companyData.description ?? companyData.companyDescription,
+    companyName,
+    location,
+    website,
+    description,
   })
   return response.data
 }

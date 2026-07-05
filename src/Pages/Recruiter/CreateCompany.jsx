@@ -5,7 +5,7 @@ import { createCompany } from '../../Services/AdminService'
 
 const initialCompanyData = {
   companyName: '',
-  companyDescription: '',
+  description: '',
   location: '',
   website: '',
 }
@@ -41,7 +41,12 @@ const CreateCompany = () => {
     setLoading(true)
 
     try {
-      await createCompany(companyData)
+      await createCompany({
+        companyName: companyData.companyName,
+        location: companyData.location,
+        website: companyData.website,
+        description: companyData.description,
+      })
       localStorage.setItem('adminCompanyName', companyData.companyName)
       localStorage.setItem('adminCompanyLocation', companyData.location)
       localStorage.setItem('adminCompanyWebsite', companyData.website)
@@ -125,15 +130,15 @@ const CreateCompany = () => {
 
                   <div>
                     <div className="mb-2 flex items-center justify-between gap-4">
-                      <label htmlFor="companyDescription" className="text-sm font-semibold text-slate-700">
+                      <label htmlFor="description" className="text-sm font-semibold text-slate-700">
                         Company description <span className="text-rose-500">*</span>
                       </label>
-                      <span className="text-xs text-slate-400">{companyData.companyDescription.length} characters</span>
+                      <span className="text-xs text-slate-400">{companyData.description.length} characters</span>
                     </div>
                     <textarea
-                      id="companyDescription"
-                      name="companyDescription"
-                      value={companyData.companyDescription}
+                      id="description"
+                      name="description"
+                      value={companyData.description}
                       onChange={handleChange}
                       placeholder="Share what your company does, who you serve, and what makes it a great place to work..."
                       rows={7}
