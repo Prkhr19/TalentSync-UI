@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
-import { getAdminJobs } from '../../Services/AdminService'
+import { getAllJobs } from '../../Services/JobService'
 
 const formatLabel = (value) => {
   if (!value) return 'Not specified'
@@ -32,7 +32,7 @@ const ViewMyJobs = () => {
   const [loading, setLoading] = useState(true)
 
   const fetchMyJobs = () => {
-    getAdminJobs()
+    getAllJobs()
       .then((data) => {
         const jobList = Array.isArray(data) ? data : data?.jobs || data?.content || []
         setJobs(jobList)
@@ -51,7 +51,7 @@ const ViewMyJobs = () => {
   }
 
   useEffect(() => {
-    getAdminJobs()
+    getAllJobs()
       .then((data) => {
         const jobList = Array.isArray(data) ? data : data?.jobs || data?.content || []
         setJobs(jobList)

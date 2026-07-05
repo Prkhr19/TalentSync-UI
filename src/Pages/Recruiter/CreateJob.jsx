@@ -59,7 +59,15 @@ const CreateJob = () => {
     setLoading(true)
 
     try {
-      await createJob(jobData)
+      await createJob({
+        title: jobData.title,
+        description: jobData.description,
+        location: jobData.location,
+        salary: jobData.salary,
+        experienceRequired: jobData.experienceRequired,
+        jobType: jobData.jobType,
+        companyId: jobData.companyId,
+      })
       setSuccess('Your job has been published successfully.')
       setJobData(initialJobData)
     } catch (requestError) {

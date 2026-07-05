@@ -15,27 +15,39 @@ export const createCompany = async ({ companyName, location, website, descriptio
   return response.data
 }
 
-export const createJob = async (jobData) => {
+export const createJob = async ({ title, description, location, salary, experienceRequired, jobType, companyId }) => {
   const response = await api.post('/admin/jobs', {
-    ...jobData,
-    companyId: Number(jobData.companyId),
-    salary: Number(jobData.salary),
+    title,
+    description,
+    location,
+    salary: Number(salary),
+    experienceRequired,
+    jobType,
+    companyId: Number(companyId),
   })
   return response.data
 }
 
-export const getAdminJobs = async () => {
-  const response = await api.get('/admin/jobs')
+export const updateJob = async (jobId, { title, description, location, salary, experienceRequired, jobType, companyId }) => {
+  const response = await api.put(`/admin/jobs/${jobId}`, {
+    title,
+    description,
+    location,
+    salary: Number(salary),
+    experienceRequired,
+    jobType,
+    companyId: Number(companyId),
+  })
   return response.data
 }
 
-export const jobApplicationsByJobId = async (jobId) => {
-  const response = await api.get(`/admin/job/${jobId}/applications`)
+export const updateJobStatus = async (jobId, status) => {
+  const response = await api.put(`/admin/jobs/${jobId}/status`, { status })
   return response.data
 }
 
-export const updateApplicationStatus = async (applicationId, status) => {
-  const response = await api.patch(`/admin/application/${applicationId}/status`, { status })
+export const patchJobSalary = async (jobId, salary) => {
+  const response = await api.patch(`/admin/jobs/${jobId}`, { salary: Number(salary) })
   return response.data
 }
 
@@ -45,10 +57,13 @@ const mapCandidateSearchParams = (params = {}) => {
   if (params.skills) mapped.skills = params.skills
   if (params.location) mapped.location = params.location
   if (params.noticePeriod) mapped.noticePeriod = params.noticePeriod
-  if (params.experience) mapped.minimumExperience = params.experience
+  if (params.experience) {
+    const parsedExperience = Number(params.experience)
+    mapped.minimumExperience = Number.isNaN(parsedExperience) ? params.experience : parsedExperience
+  }
   if (params.preferredLocation) mapped.preferredLocation = params.preferredLocation
   if (params.currentCompany) mapped.currentCompany = params.currentCompany
-  if (params.maximumExpectedCTC) mapped.maximumExpectedCTC = params.maximumExpectedCTC
+  if (params.maximumExpectedCTC) mapped.maximumExpectedCTC = Number(params.maximumExpectedCTC)
   if (params.page !== undefined) mapped.page = params.page
   if (params.size !== undefined) mapped.size = params.size
   if (params.sortBy) mapped.sortBy = params.sortBy
@@ -68,12 +83,5 @@ export const searchCandidates = async (params = {}) => {
 
 export const getCandidateById = async (candidateId) => {
   const response = await api.get(`/admin/candidates/${candidateId}`)
-  return response.data
-}
-
-export const downloadCandidateResume = async (candidateId) => {
-  const response = await api.get(`/admin/candidates/${candidateId}/resume`, {
-    responseType: 'blob',
-  })
-  return response.data
+  return response.data?.data || response.data
 }

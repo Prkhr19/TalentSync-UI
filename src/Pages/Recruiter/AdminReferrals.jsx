@@ -61,8 +61,8 @@ const AdminReferrals = () => {
                 <article key={referral.id || referral.referralId || index} className="rounded-[2rem] border border-slate-200 bg-white/90 p-6 shadow-sm">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-xl font-semibold text-slate-950">{referral.candidateName || referral.name || 'Candidate'}</h2>
-                      <p className="mt-1 text-sm text-slate-500">{referral.referredCompany || referral.companyName || 'Company not specified'}</p>
+                      <h2 className="text-xl font-semibold text-slate-950">{referral.companyName || 'Company not specified'}</h2>
+                      <p className="mt-1 text-sm text-slate-500">{referral.contactName || 'Contact not specified'}</p>
                     </div>
                     <span className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
                       {referral.status || 'REFERRED'}
@@ -71,11 +71,11 @@ const AdminReferrals = () => {
                   <div className="mt-5 grid gap-3 sm:grid-cols-2 text-sm">
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
                       <p className="text-xs text-slate-500">Referral date</p>
-                      <p className="mt-1 font-semibold">{formatDate(referral.referralDate || referral.createdAt)}</p>
+                      <p className="mt-1 font-semibold">{formatDate(referral.referredDate || referral.createdAt)}</p>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                      <p className="text-xs text-slate-500">Referred to</p>
-                      <p className="mt-1 font-semibold">{referral.referredTo || referral.recruiterName || 'N/A'}</p>
+                      <p className="text-xs text-slate-500">Contact email</p>
+                      <p className="mt-1 font-semibold">{referral.contactEmail || 'N/A'}</p>
                     </div>
                   </div>
                   {referral.remarks && (

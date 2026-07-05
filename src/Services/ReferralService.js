@@ -34,8 +34,3 @@ export const deleteReferral = async (referralId) => {
   const response = await api.delete(`/admin/referrals/${referralId}`)
   return response.data
 }
-
-export const getCandidateReferrals = async () => {
-  const response = await api.get('/candidate/referrals')
-  return response.data
-}

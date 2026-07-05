@@ -1,33 +1,77 @@
 import { useEffect, useState } from 'react'
-import { getAllJobs } from '../../Services/JobService'
+import { getAllJobs, searchJobs } from '../../Services/JobService'
 import JobCard from '../../Components/JobCard'
+
+const initialFilters = {
+  keyword: '',
+  location: '',
+  jobType: '',
+  company: '',
+}
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([])
+  const [filters, setFilters] = useState(initialFilters)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    getAllJobs()
-      .then((data) => setJobs(Array.isArray(data) ? data : data?.jobs || data?.content || []))
-      .catch((requestError) => {
-        setError('Failed to fetch jobs. Please try again later.')
-        console.error('Error fetching jobs: ', requestError)
-      })
-      .finally(() => setLoading(false))
-  }, [])
-
-  const retryFetch = () => {
+  const loadJobs = (searchFilters = null) => {
     setLoading(true)
     setError('')
 
-    getAllJobs()
+    const hasFilters = searchFilters
+      ? Object.values(searchFilters).some((value) => String(value).trim() !== '')
+      : false
+
+    const request = hasFilters
+      ? searchJobs({ ...searchFilters, page: 0, size: 50 })
+      : getAllJobs()
+
+    request
       .then((data) => setJobs(Array.isArray(data) ? data : data?.jobs || data?.content || []))
       .catch((requestError) => {
         setError('Failed to fetch jobs. Please try again later.')
         console.error('Error fetching jobs: ', requestError)
       })
       .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    let cancelled = false
+
+    const fetchJobs = async () => {
+      try {
+        const data = await getAllJobs()
+        if (cancelled) return
+        setJobs(Array.isArray(data) ? data : data?.jobs || data?.content || [])
+      } catch (requestError) {
+        if (cancelled) return
+        setError('Failed to fetch jobs. Please try again later.')
+        console.error('Error fetching jobs: ', requestError)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    fetchJobs()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleFilterChange = (event) => {
+    const { name, value } = event.target
+    setFilters((current) => ({ ...current, [name]: value }))
+  }
+
+  const handleSearch = (event) => {
+    event.preventDefault()
+    loadJobs(filters)
+  }
+
+  const handleClear = () => {
+    setFilters(initialFilters)
+    loadJobs()
   }
 
   return (
@@ -54,6 +98,54 @@ const Jobs = () => {
                 </div>
               )}
             </div>
+
+            <form onSubmit={handleSearch} className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <input
+                type="text"
+                name="keyword"
+                value={filters.keyword}
+                onChange={handleFilterChange}
+                placeholder="Keyword e.g. java"
+                className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-sky-400 focus:bg-white"
+              />
+              <input
+                type="text"
+                name="location"
+                value={filters.location}
+                onChange={handleFilterChange}
+                placeholder="Location"
+                className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-sky-400 focus:bg-white"
+              />
+              <select
+                name="jobType"
+                value={filters.jobType}
+                onChange={handleFilterChange}
+                className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-sky-400 focus:bg-white"
+              >
+                <option value="">All job types</option>
+                <option value="FULL_TIME">Full Time</option>
+                <option value="PART_TIME">Part Time</option>
+                <option value="INTERNSHIP">Internship</option>
+                <option value="REMOTE">Remote</option>
+                <option value="CONTRACT">Contract</option>
+              </select>
+              <input
+                type="text"
+                name="company"
+                value={filters.company}
+                onChange={handleFilterChange}
+                placeholder="Company"
+                className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-sky-400 focus:bg-white"
+              />
+              <div className="md:col-span-2 xl:col-span-4 flex gap-3">
+                <button type="submit" className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700">
+                  Search jobs
+                </button>
+                <button type="button" onClick={handleClear} className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400">
+                  Clear
+                </button>
+              </div>
+            </form>
           </section>
 
           {loading && (
@@ -78,7 +170,7 @@ const Jobs = () => {
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-xl font-semibold text-rose-600">!</div>
               <h2 className="mt-4 text-xl font-semibold text-slate-950">Jobs unavailable</h2>
               <p className="mt-2 text-sm text-slate-600">{error}</p>
-              <button type="button" onClick={retryFetch} className="mt-6 rounded-full bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700">
+              <button type="button" onClick={() => loadJobs()} className="mt-6 rounded-full bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700">
                 Try Again
               </button>
             </section>

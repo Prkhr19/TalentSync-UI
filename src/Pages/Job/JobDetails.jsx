@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getJobById } from '../../Services/JobService'
+import { getJobById, saveJob } from '../../Services/JobService'
 import { ROUTES } from '../../Routes/Routes'
 
 const formatLabel = (value) => {
@@ -15,7 +15,10 @@ const JobDetails = () => {
   const [job, setJob] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [saveMessage, setSaveMessage] = useState('')
+  const [saving, setSaving] = useState(false)
   const { id } = useParams()
+  const isCandidate = localStorage.getItem('role') === 'CANDIDATE'
 
   useEffect(() => {
     getJobById(id)
@@ -42,6 +45,20 @@ const JobDetails = () => {
 
   const salary = typeof job?.salary === 'number' ? job.salary.toLocaleString('en-IN') : job?.salary || 'Not disclosed'
   const postedDate = job?.postedAt ? new Date(job.postedAt).toLocaleDateString('en-IN') : 'Recently'
+
+  const handleSaveJob = async () => {
+    setSaving(true)
+    setSaveMessage('')
+    try {
+      const response = await saveJob(job.id)
+      setSaveMessage(typeof response === 'string' ? response : response?.message || 'Job successfully saved')
+    } catch (requestError) {
+      setSaveMessage(requestError.response?.data?.error || 'Could not save this job.')
+      console.error('Error saving job:', requestError)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
@@ -115,8 +132,21 @@ const JobDetails = () => {
 
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Link to={ROUTES.APPLY_JOBS.replace(':jobId', job.id)} className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-slate-700">Apply Now</Link>
+                  {isCandidate && (
+                    <button
+                      type="button"
+                      onClick={handleSaveJob}
+                      disabled={saving}
+                      className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950 disabled:opacity-60"
+                    >
+                      {saving ? 'Saving…' : 'Save Job'}
+                    </button>
+                  )}
                   <Link to={ROUTES.JOBS} className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950">Back to jobs</Link>
                 </div>
+                {saveMessage && (
+                  <p className="mt-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">{saveMessage}</p>
+                )}
               </section>
 
               <aside className="relative h-fit overflow-hidden rounded-[2rem] border border-white/80 bg-slate-900 p-7 text-white shadow-[0_20px_60px_rgba(15,23,42,0.16)] sm:p-8 lg:sticky lg:top-6">

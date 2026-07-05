@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getCandidateProfile, getResumeMetadata, updateCandidateProfile, uploadResume } from '../../Services/CandidateService'
+import { getResumeMetadata, mapProfileToForm, updateCandidateProfile, uploadResume } from '../../Services/CandidateService'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
 
@@ -7,20 +7,37 @@ const initialProfileData = {
   name: '',
   phoneNo: '',
   skills: '',
+  experience: '',
   education: '',
   location: '',
+  linkedInUrl: '',
+  totalExperience: '',
   currentCompany: '',
   currentDesignation: '',
-  totalExperience: '',
+  highestQualification: '',
+  graduationYear: '',
   currentCTC: '',
   expectedCTC: '',
   noticePeriod: '',
-  preferredLocation: '',
-  linkedInUrl: '',
-  githubUrl: '',
-  portfolioUrl: '',
-  resumeHeadline: '',
 }
+
+const requiredFields = [
+  'name',
+  'phoneNo',
+  'skills',
+  'experience',
+  'education',
+  'location',
+  'linkedInUrl',
+  'totalExperience',
+  'currentCompany',
+  'currentDesignation',
+  'highestQualification',
+  'graduationYear',
+  'currentCTC',
+  'expectedCTC',
+  'noticePeriod',
+]
 
 const inputClassName =
   'w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-4 focus:ring-sky-100'
@@ -35,48 +52,18 @@ const CandidateUpdateProfile = () => {
   const [success, setSuccess] = useState('')
 
   useEffect(() => {
-    Promise.all([
-      getCandidateProfile().catch(() => null),
-      getResumeMetadata().catch(() => null),
-    ])
-      .then(([profileResponse, resumeResponse]) => {
-        const profile = profileResponse?.profile || profileResponse
-        if (profile) {
-          setProfileData((current) => ({
-            ...current,
-            name: profile.name || '',
-            phoneNo: profile.phoneNo || profile.phone || '',
-            skills: profile.skills || '',
-            education: profile.education || '',
-            location: profile.location || '',
-            currentCompany: profile.currentCompany || '',
-            currentDesignation: profile.currentDesignation || '',
-            totalExperience: profile.totalExperience ?? profile.experience ?? '',
-            currentCTC: profile.currentCtc ?? profile.currentCTC ?? '',
-            expectedCTC: profile.expectedCtc ?? profile.expectedCTC ?? '',
-            noticePeriod: profile.noticePeriod || '',
-            preferredLocation: profile.preferredLocation || '',
-            linkedInUrl: profile.linkedInUrl || '',
-            githubUrl: profile.githubUrl || '',
-            portfolioUrl: profile.portfolioUrl || '',
-            resumeHeadline: profile.resumeHeadline || '',
-          }))
-        }
-
-        const resume = resumeResponse?.resume || resumeResponse
-        const resumeName =
-          resume?.fileName ||
-          resume?.resumeFileName ||
-          profile?.resumeFileName ||
-          profile?.resumeName ||
-          ''
+    getResumeMetadata()
+      .then((resumeResponse) => {
+        const resumeName = resumeResponse?.fileName || ''
 
         if (resumeName) {
           setExistingResumeName(resumeName)
         }
       })
       .catch((requestError) => {
-        console.error('Error loading profile:', requestError)
+        if (requestError.response?.status !== 404) {
+          console.error('Error loading resume metadata:', requestError)
+        }
       })
       .finally(() => setLoadingProfile(false))
   }, [])
@@ -96,6 +83,11 @@ const CandidateUpdateProfile = () => {
       return
     }
 
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Resume must be 5MB or smaller.')
+      return
+    }
+
     setResumeFile(file)
     setError('')
     setSuccess('')
@@ -106,7 +98,6 @@ const CandidateUpdateProfile = () => {
     setError('')
     setSuccess('')
 
-    const requiredFields = ['name', 'phoneNo', 'skills', 'education', 'location', 'resumeHeadline']
     const missingField = requiredFields.find((field) => !String(profileData[field] || '').trim())
 
     if (missingField) {
@@ -114,25 +105,46 @@ const CandidateUpdateProfile = () => {
       return
     }
 
+    if (profileData.phoneNo.length > 10) {
+      setError('Phone number must be at most 10 characters.')
+      return
+    }
+
+    const graduationYear = Number(profileData.graduationYear)
+    const currentCtc = Number(profileData.currentCTC)
+    const expectedCtc = Number(profileData.expectedCTC)
+
+    if (!Number.isInteger(graduationYear) || graduationYear <= 0) {
+      setError('Graduation year must be a positive whole number.')
+      return
+    }
+
+    if (Number.isNaN(currentCtc) || currentCtc <= 0 || Number.isNaN(expectedCtc) || expectedCtc <= 0) {
+      setError('Current CTC and expected CTC must be positive numbers.')
+      return
+    }
+
     if (!resumeFile && !existingResumeName) {
-      setError('Please upload your resume as a PDF.')
+      setError('Please upload your resume as a PDF before updating your profile.')
       return
     }
 
     setLoading(true)
     try {
       if (resumeFile) {
-        await uploadResume(resumeFile)
+        const uploadResponse = await uploadResume(resumeFile)
+        setExistingResumeName(uploadResponse?.fileName || resumeFile.name)
+        setResumeFile(null)
       }
 
-      await updateCandidateProfile(profileData)
+      const savedProfile = await updateCandidateProfile(profileData)
+      if (savedProfile) {
+        setProfileData((current) => ({ ...current, ...mapProfileToForm(savedProfile) }))
+      }
+
       localStorage.setItem('candidateName', profileData.name)
       localStorage.setItem('candidateEducation', profileData.education)
       localStorage.setItem('candidateSkills', profileData.skills)
-      if (resumeFile) {
-        setExistingResumeName(resumeFile.name)
-        setResumeFile(null)
-      }
       setSuccess('Your profile has been updated successfully.')
     } catch (requestError) {
       const message =
@@ -158,8 +170,7 @@ const CandidateUpdateProfile = () => {
               Keep your profile polished and ready.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-              A complete profile helps hiring teams understand your background quickly and improves your
-              chances of being referred.
+              Upload your resume first, then complete every required profile field before applying to jobs.
             </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -167,8 +178,8 @@ const CandidateUpdateProfile = () => {
                 <p className="text-sm font-medium text-slate-500">What to include</p>
                 <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
                   <li>Current company, designation, and experience</li>
-                  <li>CTC, notice period, and preferred location</li>
-                  <li>A PDF resume and professional links</li>
+                  <li>CTC, notice period, and LinkedIn URL</li>
+                  <li>A PDF resume (max 5MB)</li>
                 </ul>
               </div>
 
@@ -198,7 +209,7 @@ const CandidateUpdateProfile = () => {
             <div className="relative border-b border-slate-200 pb-5">
               <h2 className="text-2xl font-semibold text-slate-950">Update your profile</h2>
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Fill in the fields below and upload your resume PDF.
+                Upload your resume PDF, then fill in all required profile fields.
               </p>
             </div>
 
@@ -225,19 +236,18 @@ const CandidateUpdateProfile = () => {
               <div className="grid gap-5 md:grid-cols-2">
                 {[
                   ['name', 'Name', 'text', 'Enter name'],
-                  ['phoneNo', 'Phone number', 'text', 'Enter phone number'],
+                  ['phoneNo', 'Phone number', 'tel', '10-digit phone number'],
                   ['location', 'Location', 'text', 'Enter location'],
-                  ['resumeHeadline', 'Resume headline', 'text', 'Short professional headline'],
+                  ['linkedInUrl', 'LinkedIn URL', 'url', 'https://linkedin.com/in/...'],
                   ['currentCompany', 'Current company', 'text', 'Enter current company'],
                   ['currentDesignation', 'Current designation', 'text', 'Enter designation'],
-                  ['totalExperience', 'Total experience (years)', 'text', 'e.g. 3'],
-                  ['currentCTC', 'Current CTC', 'text', 'e.g. 800000'],
-                  ['expectedCTC', 'Expected CTC', 'text', 'e.g. 1000000'],
+                  ['experience', 'Experience summary', 'text', 'e.g. 3 years backend development'],
+                  ['totalExperience', 'Total experience', 'text', 'e.g. 3 years'],
+                  ['highestQualification', 'Highest qualification', 'text', 'e.g. B.Tech'],
+                  ['graduationYear', 'Graduation year', 'number', 'e.g. 2020'],
+                  ['currentCTC', 'Current CTC', 'number', 'e.g. 800000'],
+                  ['expectedCTC', 'Expected CTC', 'number', 'e.g. 1200000'],
                   ['noticePeriod', 'Notice period', 'text', 'e.g. 30 days'],
-                  ['preferredLocation', 'Preferred location', 'text', 'Enter preferred location'],
-                  ['linkedInUrl', 'LinkedIn URL', 'url', 'https://linkedin.com/in/...'],
-                  ['githubUrl', 'GitHub URL', 'url', 'https://github.com/...'],
-                  ['portfolioUrl', 'Portfolio URL', 'url', 'https://...'],
                 ].map(([name, label, type, placeholder]) => (
                   <div key={name}>
                     <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor={name}>
@@ -250,6 +260,8 @@ const CandidateUpdateProfile = () => {
                       value={profileData[name]}
                       onChange={handleChange}
                       placeholder={placeholder}
+                      maxLength={name === 'phoneNo' ? 10 : undefined}
+                      min={name === 'graduationYear' || name === 'currentCTC' || name === 'expectedCTC' ? 1 : undefined}
                       className={inputClassName}
                     />
                   </div>

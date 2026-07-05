@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
-import { getCandidates, searchCandidates, downloadCandidateResume } from '../../Services/AdminService'
+import { getCandidates, getCandidateById, searchCandidates } from '../../Services/AdminService'
 
 const inputClassName =
   'w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100'
@@ -71,21 +71,26 @@ const AdminCandidates = () => {
     loadCandidates(filters)
   }
 
-  const handleDownloadResume = async (candidateId, candidateName) => {
+  const handleViewResume = async (candidate) => {
+    const candidateId = candidate.candidateId || candidate.id
+
+    if (candidate.resumeUrl) {
+      window.open(candidate.resumeUrl, '_blank', 'noopener,noreferrer')
+      return
+    }
+
     setDownloadingId(candidateId)
     try {
-      const blob = await downloadCandidateResume(candidateId)
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `${candidateName || 'candidate'}-resume.pdf`
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url)
+      const detail = await getCandidateById(candidateId)
+      const resumeUrl = detail?.resumeUrl
+      if (resumeUrl) {
+        window.open(resumeUrl, '_blank', 'noopener,noreferrer')
+      } else {
+        setError('No resume available for this candidate.')
+      }
     } catch (requestError) {
-      console.error('Error downloading resume:', requestError)
-      setError('Could not download resume for this candidate.')
+      console.error('Error loading candidate resume:', requestError)
+      setError('Could not open resume for this candidate.')
     } finally {
       setDownloadingId(null)
     }
@@ -166,16 +171,20 @@ const AdminCandidates = () => {
                 const candidateId = candidate.candidateId || candidate.id
                 return (
                   <article key={candidateId} className="rounded-[2rem] border border-slate-200 bg-white/90 p-6 shadow-sm">
-                    <h2 className="text-xl font-semibold text-slate-950">{candidate.name || 'Candidate'}</h2>
-                    <p className="mt-1 text-sm text-slate-500">{candidate.currentDesignation || candidate.resumeHeadline || 'Profile available'}</p>
+                    <h2 className="text-xl font-semibold text-slate-950">{candidate.fullName || candidate.name || 'Candidate'}</h2>
+                    <p className="mt-1 text-sm text-slate-500">{candidate.currentDesignation || 'Profile available'}</p>
                     <div className="mt-5 grid gap-3 sm:grid-cols-2 text-sm">
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
                         <p className="text-xs text-slate-500">Experience</p>
-                        <p className="mt-1 font-semibold">{candidate.totalExperience || candidate.experience || 'N/A'}</p>
+                        <p className="mt-1 font-semibold">{candidate.totalExperience || 'N/A'}</p>
                       </div>
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
                         <p className="text-xs text-slate-500">Location</p>
                         <p className="mt-1 font-semibold">{candidate.preferredLocation || candidate.location || 'N/A'}</p>
+                      </div>
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                        <p className="text-xs text-slate-500">Expected CTC</p>
+                        <p className="mt-1 font-semibold">{candidate.expectedCTC ? `₹${Number(candidate.expectedCTC).toLocaleString('en-IN')}` : 'N/A'}</p>
                       </div>
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:col-span-2">
                         <p className="text-xs text-slate-500">Skills</p>
@@ -184,11 +193,11 @@ const AdminCandidates = () => {
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleDownloadResume(candidateId, candidate.name)}
+                      onClick={() => handleViewResume(candidate)}
                       disabled={downloadingId === candidateId}
                       className="mt-5 inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 disabled:opacity-60"
                     >
-                      {downloadingId === candidateId ? 'Downloading...' : 'Download Resume'}
+                      {downloadingId === candidateId ? 'Opening...' : 'View Resume'}
                     </button>
                   </article>
                 )

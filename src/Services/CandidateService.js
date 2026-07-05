@@ -1,10 +1,5 @@
 import api from '../Api/Axios'
 
-export const getCandidateProfile = async () => {
-  const response = await api.get('/candidate/profile')
-  return response.data?.data || response.data
-}
-
 export const getResumeMetadata = async () => {
   const response = await api.get('/candidate/resume')
   return response.data?.data || response.data
@@ -27,34 +22,48 @@ export const deleteResume = async () => {
   return response.data
 }
 
-const buildProfilePayload = (profileData) => {
-  const payload = {
-    name: profileData.name,
-    phoneNo: profileData.phoneNo,
-    skills: profileData.skills,
-    experience: profileData.experience || profileData.totalExperience,
-    education: profileData.education,
-    location: profileData.location,
-    linkedInUrl: profileData.linkedInUrl,
-    totalExperience: profileData.totalExperience,
-    currentCompany: profileData.currentCompany,
-    currentDesignation: profileData.currentDesignation,
-    highestQualification: profileData.highestQualification || profileData.education,
-    graduationYear: profileData.graduationYear ? Number(profileData.graduationYear) : undefined,
-    currentCtc: profileData.currentCtc ?? profileData.currentCTC,
-    expectedCtc: profileData.expectedCtc ?? profileData.expectedCTC,
-    noticePeriod: profileData.noticePeriod,
-  }
+const buildProfilePayload = (profileData) => ({
+  name: profileData.name,
+  phoneNo: profileData.phoneNo,
+  skills: profileData.skills,
+  experience: profileData.experience,
+  education: profileData.education,
+  location: profileData.location,
+  linkedInUrl: profileData.linkedInUrl,
+  totalExperience: profileData.totalExperience,
+  currentCompany: profileData.currentCompany,
+  currentDesignation: profileData.currentDesignation,
+  highestQualification: profileData.highestQualification,
+  graduationYear: Number(profileData.graduationYear),
+  currentCtc: Number(profileData.currentCTC),
+  expectedCtc: Number(profileData.expectedCTC),
+  noticePeriod: profileData.noticePeriod,
+})
 
-  return Object.fromEntries(
-    Object.entries(payload).filter(([, value]) => value !== undefined && value !== null && value !== '')
-  )
-}
+const mapProfileToForm = (profile) => ({
+  name: profile.name || '',
+  phoneNo: profile.phoneNo || '',
+  skills: profile.skills || '',
+  experience: profile.experience || '',
+  education: profile.education || '',
+  location: profile.location || '',
+  linkedInUrl: profile.linkedInUrl || '',
+  totalExperience: profile.totalExperience || '',
+  currentCompany: profile.currentCompany || '',
+  currentDesignation: profile.currentDesignation || '',
+  highestQualification: profile.highestQualification || '',
+  graduationYear: profile.graduationYear ?? '',
+  currentCTC: profile.currentCtc ?? '',
+  expectedCTC: profile.expectedCtc ?? '',
+  noticePeriod: profile.noticePeriod || '',
+})
 
 export const updateCandidateProfile = async (profileData) => {
   const response = await api.put('/candidate/profile', buildProfilePayload(profileData))
-  return response.data
+  return response.data?.data || response.data
 }
+
+export { mapProfileToForm }
 
 export const getApplicationStatus = async () => {
   const response = await api.get('/candidate/applicationStatus')

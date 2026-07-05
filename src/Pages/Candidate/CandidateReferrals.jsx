@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
-import { getCandidateReferrals } from '../../Services/ReferralService'
-
-const formatDate = (date) => {
-  if (!date) return 'Date unavailable'
-  const parsedDate = new Date(date)
-  return Number.isNaN(parsedDate.getTime()) ? date : parsedDate.toLocaleDateString('en-IN')
-}
+import { getApplicationStatus } from '../../Services/CandidateService'
 
 const CandidateReferrals = () => {
   const [referrals, setReferrals] = useState([])
@@ -15,10 +9,10 @@ const CandidateReferrals = () => {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    getCandidateReferrals()
+    getApplicationStatus()
       .then((data) => {
-        const list = Array.isArray(data) ? data : data?.referrals || data?.content || []
-        setReferrals(list)
+        const list = Array.isArray(data) ? data : data?.applications || data?.content || []
+        setReferrals(list.filter((item) => item.status === 'REFERRED'))
       })
       .catch((requestError) => {
         console.error('Error fetching referrals:', requestError)
@@ -61,8 +55,8 @@ const CandidateReferrals = () => {
                 <article key={referral.id || referral.referralId || index} className="rounded-[2rem] border border-slate-200 bg-white/90 p-6 shadow-sm">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-xl font-semibold text-slate-950">{referral.referredCompany || referral.companyName || 'Company referral'}</h2>
-                      <p className="mt-1 text-sm text-slate-500">{referral.jobTitle || referral.role || 'Role not specified'}</p>
+                      <h2 className="text-xl font-semibold text-slate-950">{referral.message || 'Referral update'}</h2>
+                      <p className="mt-1 text-sm text-slate-500">{referral.description || 'Your application was referred'}</p>
                     </div>
                     <span className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
                       {referral.status || 'REFERRED'}
@@ -70,17 +64,14 @@ const CandidateReferrals = () => {
                   </div>
                   <div className="mt-5 grid gap-3 sm:grid-cols-2 text-sm">
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                      <p className="text-xs text-slate-500">Referral date</p>
-                      <p className="mt-1 font-semibold">{formatDate(referral.referralDate || referral.createdAt)}</p>
+                      <p className="text-xs text-slate-500">Salary</p>
+                      <p className="mt-1 font-semibold">{referral.salary ? `₹${Number(referral.salary).toLocaleString('en-IN')}` : 'N/A'}</p>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                      <p className="text-xs text-slate-500">Referred to</p>
-                      <p className="mt-1 font-semibold">{referral.referredTo || referral.recruiterName || 'Hiring team'}</p>
+                      <p className="text-xs text-slate-500">Status</p>
+                      <p className="mt-1 font-semibold">{referral.status || 'REFERRED'}</p>
                     </div>
                   </div>
-                  {referral.remarks && (
-                    <p className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">{referral.remarks}</p>
-                  )}
                 </article>
               ))}
             </section>

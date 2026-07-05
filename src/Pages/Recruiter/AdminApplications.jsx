@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
-import { getAdminJobs } from '../../Services/AdminService'
+import { getAllJobs } from '../../Services/JobService'
 
 const AdminApplications = () => {
   const [jobs, setJobs] = useState([])
@@ -9,7 +9,7 @@ const AdminApplications = () => {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    getAdminJobs()
+    getAllJobs()
       .then((data) => {
         const jobList = Array.isArray(data) ? data : data?.jobs || data?.content || []
         setJobs(jobList)

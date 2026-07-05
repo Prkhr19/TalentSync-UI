@@ -15,35 +15,7 @@ const getStatusTone = (status) => {
   return 'bg-slate-50 text-slate-700 border-slate-200'
 }
 
-const getPostedDate = (date) => {
-  if (!date) return 'Recently'
-  const parsedDate = new Date(date)
-  return Number.isNaN(parsedDate.getTime()) ? date : parsedDate.toLocaleDateString('en-IN')
-}
-
-const getCompanyName = (application) => {
-  const company = application.company
-  const jobCompany = application.job?.company
-
-  return (
-    application.companyName ||
-    application.company_name ||
-    application.employerName ||
-    application.adminCompanyName ||
-    (typeof company === 'string' ? company : company?.companyName || company?.name) ||
-    application.job?.companyName ||
-    application.job?.company_name ||
-    (typeof jobCompany === 'string' ? jobCompany : jobCompany?.companyName || jobCompany?.name) ||
-    'Company not provided'
-  )
-}
-
-const getJobTitle = (application) =>
-  application.title ||
-  application.jobTitle ||
-  application.position ||
-  application.job?.title ||
-  'Applied role'
+const getJobTitle = (application) => application.description || application.message || 'Applied role'
 
 const JobApplicationStatus = () => {
   const [applications, setApplications] = useState([])
@@ -119,12 +91,12 @@ const JobApplicationStatus = () => {
               {applications.map((application, index) => (
                 <article key={application.applicationId || application.id || index} className="flex h-full flex-col rounded-[2rem] border border-slate-200 bg-white/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md backdrop-blur">
                   <div className="flex items-start justify-between gap-4">
-                    <div><p className="text-sm font-medium text-slate-500">{getCompanyName(application)}</p><h2 className="mt-2 text-xl font-semibold text-slate-950">{getJobTitle(application)}</h2></div>
+                    <div><p className="text-sm font-medium text-slate-500">{application.message || 'Application update'}</p><h2 className="mt-2 text-xl font-semibold text-slate-950">{getJobTitle(application)}</h2></div>
                     <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold ${getStatusTone(application.status)}`}>{getStatusLabel(application.status)}</span>
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs font-medium text-slate-500">Salary</p><p className="mt-2 font-semibold text-slate-900">{typeof application.salary === 'number' ? application.salary.toLocaleString('en-IN') : application.salary || 'Not disclosed'}</p></div>
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs font-medium text-slate-500">Applied</p><p className="mt-2 font-semibold text-slate-900">{getPostedDate(application.appliedAt || application.postedAt)}</p></div>
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs font-medium text-slate-500">Status</p><p className="mt-2 font-semibold text-slate-900">{getStatusLabel(application.status)}</p></div>
                   </div>
                   <div className="mt-4 flex-1 rounded-3xl border border-slate-200 bg-slate-50 p-4"><p className="text-sm font-medium text-slate-500">Description</p><p className="mt-2 line-clamp-4 text-sm leading-6 text-slate-700">{application.description || 'No description available.'}</p></div>
                 </article>

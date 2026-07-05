@@ -60,8 +60,6 @@ const Login = () => {
       tokenPayload?.username ||
       pendingSignupName
 
-    console.log("Login response payload:", payload, { token, role })
-
     if (!token || !role) {
       throw new Error("Login response did not contain token or role")
     }
