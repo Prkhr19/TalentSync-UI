@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
-import { createJob } from '../../Services/AdminService'
+import { createJob, getCompanies } from '../../Services/AdminService'
 
 const initialJobData = {
   title: '',
@@ -10,6 +10,7 @@ const initialJobData = {
   salary: '',
   experienceRequired: '',
   jobType: 'FULL_TIME',
+  companyId: '',
 }
 
 const inputClassName =
@@ -17,11 +18,26 @@ const inputClassName =
 
 const CreateJob = () => {
   const [jobData, setJobData] = useState(initialJobData)
+  const [companies, setCompanies] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const isFormIncomplete = Object.values(jobData).some((value) => String(value).trim() === '')
+  useEffect(() => {
+    getCompanies()
+      .then((data) => {
+        const list = Array.isArray(data) ? data : data?.companies || data?.content || []
+        setCompanies(list)
+      })
+      .catch((requestError) => {
+        console.error('Error fetching companies:', requestError)
+      })
+  }, [])
+
+  const isFormIncomplete = Object.entries(jobData).some(([key, value]) => {
+    if (key === 'companyId') return String(value).trim() === ''
+    return String(value).trim() === ''
+  })
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -141,18 +157,26 @@ const CreateJob = () => {
 
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label htmlFor="location" className="mb-2 block text-sm font-semibold text-slate-700">
-                        Location <span className="text-rose-500">*</span>
+                      <label htmlFor="companyId" className="mb-2 block text-sm font-semibold text-slate-700">
+                        Company <span className="text-rose-500">*</span>
                       </label>
-                      <input
-                        id="location"
-                        type="text"
-                        name="location"
-                        value={jobData.location}
+                      <select
+                        id="companyId"
+                        name="companyId"
+                        value={jobData.companyId}
                         onChange={handleChange}
-                        placeholder="e.g. Bengaluru or Remote"
                         className={inputClassName}
-                      />
+                      >
+                        <option value="">Select a company</option>
+                        {companies.map((company) => {
+                          const companyId = company.companyId || company.id
+                          return (
+                            <option key={companyId} value={companyId}>
+                              {company.companyName || company.name}
+                            </option>
+                          )
+                        })}
+                      </select>
                     </div>
 
                     <div>
@@ -170,11 +194,27 @@ const CreateJob = () => {
                         <option value="PART_TIME">Part Time</option>
                         <option value="CONTRACT">Contract</option>
                         <option value="INTERNSHIP">Internship</option>
+                        <option value="REMOTE">Remote</option>
                       </select>
                     </div>
                   </div>
 
                   <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="location" className="mb-2 block text-sm font-semibold text-slate-700">
+                        Location <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        id="location"
+                        type="text"
+                        name="location"
+                        value={jobData.location}
+                        onChange={handleChange}
+                        placeholder="e.g. Bengaluru or Remote"
+                        className={inputClassName}
+                      />
+                    </div>
+
                     <div>
                       <label htmlFor="salary" className="mb-2 block text-sm font-semibold text-slate-700">
                         Annual salary <span className="text-rose-500">*</span>

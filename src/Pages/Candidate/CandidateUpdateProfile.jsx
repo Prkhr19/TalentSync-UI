@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getCandidateProfile, updateCandidateProfile } from '../../Services/CandidateService'
+import { getCandidateProfile, getResumeMetadata, updateCandidateProfile, uploadResume } from '../../Services/CandidateService'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
 
@@ -35,9 +35,12 @@ const CandidateUpdateProfile = () => {
   const [success, setSuccess] = useState('')
 
   useEffect(() => {
-    getCandidateProfile()
-      .then((data) => {
-        const profile = data?.profile || data
+    Promise.all([
+      getCandidateProfile().catch(() => null),
+      getResumeMetadata().catch(() => null),
+    ])
+      .then(([profileResponse, resumeResponse]) => {
+        const profile = profileResponse?.profile || profileResponse
         if (profile) {
           setProfileData((current) => ({
             ...current,
@@ -49,8 +52,8 @@ const CandidateUpdateProfile = () => {
             currentCompany: profile.currentCompany || '',
             currentDesignation: profile.currentDesignation || '',
             totalExperience: profile.totalExperience ?? profile.experience ?? '',
-            currentCTC: profile.currentCTC ?? '',
-            expectedCTC: profile.expectedCTC ?? '',
+            currentCTC: profile.currentCtc ?? profile.currentCTC ?? '',
+            expectedCTC: profile.expectedCtc ?? profile.expectedCTC ?? '',
             noticePeriod: profile.noticePeriod || '',
             preferredLocation: profile.preferredLocation || '',
             linkedInUrl: profile.linkedInUrl || '',
@@ -58,7 +61,18 @@ const CandidateUpdateProfile = () => {
             portfolioUrl: profile.portfolioUrl || '',
             resumeHeadline: profile.resumeHeadline || '',
           }))
-          setExistingResumeName(profile.resumeFileName || profile.resumeName || '')
+        }
+
+        const resume = resumeResponse?.resume || resumeResponse
+        const resumeName =
+          resume?.fileName ||
+          resume?.resumeFileName ||
+          profile?.resumeFileName ||
+          profile?.resumeName ||
+          ''
+
+        if (resumeName) {
+          setExistingResumeName(resumeName)
         }
       })
       .catch((requestError) => {
@@ -107,7 +121,11 @@ const CandidateUpdateProfile = () => {
 
     setLoading(true)
     try {
-      await updateCandidateProfile(profileData, resumeFile)
+      if (resumeFile) {
+        await uploadResume(resumeFile)
+      }
+
+      await updateCandidateProfile(profileData)
       localStorage.setItem('candidateName', profileData.name)
       localStorage.setItem('candidateEducation', profileData.education)
       localStorage.setItem('candidateSkills', profileData.skills)

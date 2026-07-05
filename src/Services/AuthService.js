@@ -7,8 +7,9 @@ export const login = async (loginData) => {
 
 export const signup = async (signupData) => {
   const response = await api.post("/auth/signup", {
-    ...signupData,
-    role: "CANDIDATE",
+    name: signupData.name,
+    email: signupData.email,
+    password: signupData.password,
   })
   return response.data?.data || response.data
 }
