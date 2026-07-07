@@ -8,7 +8,6 @@ const initialProfileData = {
   phoneNo: '',
   skills: '',
   experience: '',
-  education: '',
   location: '',
   linkedInUrl: '',
   totalExperience: '',
@@ -26,7 +25,6 @@ const requiredFields = [
   'phoneNo',
   'skills',
   'experience',
-  'education',
   'location',
   'linkedInUrl',
   'totalExperience',
@@ -119,8 +117,13 @@ const CandidateUpdateProfile = () => {
       return
     }
 
-    if (Number.isNaN(currentCtc) || currentCtc <= 0 || Number.isNaN(expectedCtc) || expectedCtc <= 0) {
-      setError('Current CTC and expected CTC must be positive numbers.')
+    if (Number.isNaN(currentCtc) || currentCtc < 0) {
+      setError('Current CTC must be 0 or a positive number.')
+      return
+    }
+
+    if (Number.isNaN(expectedCtc) || expectedCtc <= 0) {
+      setError('Expected CTC must be a positive number.')
       return
     }
 
@@ -143,7 +146,7 @@ const CandidateUpdateProfile = () => {
       }
 
       localStorage.setItem('candidateName', profileData.name)
-      localStorage.setItem('candidateEducation', profileData.education)
+      localStorage.setItem('candidateEducation', profileData.highestQualification)
       localStorage.setItem('candidateSkills', profileData.skills)
       setSuccess('Your profile has been updated successfully.')
     } catch (requestError) {
@@ -245,7 +248,7 @@ const CandidateUpdateProfile = () => {
                   ['totalExperience', 'Total experience', 'text', 'e.g. 3 years'],
                   ['highestQualification', 'Highest qualification', 'text', 'e.g. B.Tech'],
                   ['graduationYear', 'Graduation year', 'number', 'e.g. 2020'],
-                  ['currentCTC', 'Current CTC', 'number', 'e.g. 800000'],
+                  ['currentCTC', 'Current CTC', 'number', 'e.g. 0 or 800000'],
                   ['expectedCTC', 'Expected CTC', 'number', 'e.g. 1200000'],
                   ['noticePeriod', 'Notice period', 'text', 'e.g. 30 days'],
                 ].map(([name, label, type, placeholder]) => (
@@ -261,7 +264,13 @@ const CandidateUpdateProfile = () => {
                       onChange={handleChange}
                       placeholder={placeholder}
                       maxLength={name === 'phoneNo' ? 10 : undefined}
-                      min={name === 'graduationYear' || name === 'currentCTC' || name === 'expectedCTC' ? 1 : undefined}
+                      min={
+                        name === 'graduationYear' || name === 'expectedCTC'
+                          ? 1
+                          : name === 'currentCTC'
+                            ? 0
+                            : undefined
+                      }
                       className={inputClassName}
                     />
                   </div>
@@ -278,21 +287,6 @@ const CandidateUpdateProfile = () => {
                     value={profileData.skills}
                     onChange={handleChange}
                     placeholder="Enter skills, separated by commas"
-                    className={inputClassName}
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="education">
-                    Education
-                  </label>
-                  <input
-                    type="text"
-                    id="education"
-                    name="education"
-                    value={profileData.education}
-                    onChange={handleChange}
-                    placeholder="Enter education"
                     className={inputClassName}
                   />
                 </div>

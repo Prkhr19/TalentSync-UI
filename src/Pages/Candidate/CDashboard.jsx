@@ -18,14 +18,14 @@ const CDashboard = () => {
   const [activeSlide, setActiveSlide] = useState(0)
 
   const candidateName = localStorage.getItem('candidateName') || 'Candidate'
-  const candidateEducation = localStorage.getItem('candidateEducation') || 'Add your education in Update Profile'
+  const candidateEducation = localStorage.getItem('candidateEducation') || 'Add your highest qualification in Update Profile'
   const candidateSkills = localStorage.getItem('candidateSkills') || 'Add your skills in Update Profile'
 
   const profileSlides = useMemo(
     () => [
       {
         title: 'Profile overview',
-        content: `Name: ${candidateName}\nEducation: ${candidateEducation}\nSkills: ${candidateSkills}`,
+        content: `Name: ${candidateName}\nHighest qualification: ${candidateEducation}\nSkills: ${candidateSkills}`,
       },
       {
         title: 'Top strengths',

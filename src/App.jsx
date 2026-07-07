@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import Mainlayout from './layouts/Mainlayout'
-import Home from './Pages/Home'
+import HomeRedirect from './Routes/HomeRedirect'
 import Login from './Pages/Auth/Login'
 import Signup from './Pages/Auth/Signup'
 import { ROUTES } from './Routes/Routes.js'
@@ -29,7 +29,7 @@ const App = () => {
   return (
     <Routes>
       <Route element={<Mainlayout />}>
-        <Route path={ROUTES.HOME} element={<Home />} />
+        <Route path={ROUTES.HOME} element={<HomeRedirect />} />
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.SIGNUP} element={<Signup />} />
         <Route path={ROUTES.PRIVACY_POLICY} element={<PrivacyPolicy />} />
