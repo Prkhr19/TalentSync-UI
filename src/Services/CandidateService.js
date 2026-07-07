@@ -1,5 +1,10 @@
 import api from '../Api/Axios'
 
+export const getCandidateProfile = async () => {
+  const response = await api.get('/candidate/profile')
+  return response.data?.data || response.data
+}
+
 export const getResumeMetadata = async () => {
   const response = await api.get('/candidate/resume')
   return response.data?.data || response.data

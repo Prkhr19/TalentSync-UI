@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getResumeMetadata, mapProfileToForm, updateCandidateProfile, uploadResume } from '../../Services/CandidateService'
+import { getCandidateProfile, getResumeMetadata, mapProfileToForm, updateCandidateProfile, uploadResume } from '../../Services/CandidateService'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
 
@@ -50,17 +50,35 @@ const CandidateUpdateProfile = () => {
   const [success, setSuccess] = useState('')
 
   useEffect(() => {
-    getResumeMetadata()
-      .then((resumeResponse) => {
+    Promise.all([
+      getCandidateProfile().catch((requestError) => {
+        if (requestError.response?.status !== 404) {
+          console.error('Error loading profile:', requestError)
+        }
+        return null
+      }),
+      getResumeMetadata().catch((requestError) => {
+        if (requestError.response?.status !== 404) {
+          console.error('Error loading resume metadata:', requestError)
+        }
+        return null
+      }),
+    ])
+      .then(([profileResponse, resumeResponse]) => {
+        const profile = profileResponse?.profile || profileResponse
+
+        if (profile) {
+          const formData = mapProfileToForm(profile)
+          setProfileData((current) => ({ ...current, ...formData }))
+          localStorage.setItem('candidateName', formData.name)
+          localStorage.setItem('candidateEducation', formData.highestQualification)
+          localStorage.setItem('candidateSkills', formData.skills)
+        }
+
         const resumeName = resumeResponse?.fileName || ''
 
         if (resumeName) {
           setExistingResumeName(resumeName)
-        }
-      })
-      .catch((requestError) => {
-        if (requestError.response?.status !== 404) {
-          console.error('Error loading resume metadata:', requestError)
         }
       })
       .finally(() => setLoadingProfile(false))
@@ -142,12 +160,16 @@ const CandidateUpdateProfile = () => {
 
       const savedProfile = await updateCandidateProfile(profileData)
       if (savedProfile) {
-        setProfileData((current) => ({ ...current, ...mapProfileToForm(savedProfile) }))
+        const formData = mapProfileToForm(savedProfile)
+        setProfileData((current) => ({ ...current, ...formData }))
+        localStorage.setItem('candidateName', formData.name)
+        localStorage.setItem('candidateEducation', formData.highestQualification)
+        localStorage.setItem('candidateSkills', formData.skills)
+      } else {
+        localStorage.setItem('candidateName', profileData.name)
+        localStorage.setItem('candidateEducation', profileData.highestQualification)
+        localStorage.setItem('candidateSkills', profileData.skills)
       }
-
-      localStorage.setItem('candidateName', profileData.name)
-      localStorage.setItem('candidateEducation', profileData.highestQualification)
-      localStorage.setItem('candidateSkills', profileData.skills)
       setSuccess('Your profile has been updated successfully.')
     } catch (requestError) {
       const message =
