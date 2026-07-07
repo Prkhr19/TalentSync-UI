@@ -3,16 +3,7 @@ import { login } from '../../Services/AuthService'
 import { setAuthSession } from '../../Api/Axios'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
-
-const getTokenPayload = (token) => {
-  try {
-    const encodedPayload = token.split('.')[1]
-    const normalizedPayload = encodedPayload.replace(/-/g, '+').replace(/_/g, '/')
-    return JSON.parse(decodeURIComponent(escape(atob(normalizedPayload))))
-  } catch {
-    return {}
-  }
-}
+import { extractLoginCredentials } from '../../utils/auth'
 
 const Login = () => {
   const [email, setEmail] = useState("")
@@ -38,14 +29,10 @@ const Login = () => {
       password
     }
 
-    const response = await login(loginData);
-    const payload = response?.data || response
-    const token = payload?.token || payload?.accessToken || payload?.access_token || payload?.data?.token || payload?.data?.accessToken || payload?.data?.access_token
-    const role = payload?.role || payload?.userRole || payload?.user_role || payload?.data?.role || payload?.data?.userRole || payload?.data?.user_role
-    const tokenPayload = token ? getTokenPayload(token) : {}
-    const pendingSignupName = localStorage.getItem('pendingSignupEmail') === email
-      ? localStorage.getItem('pendingSignupName')
-      : ''
+    const response = await login(loginData)
+    const payload = response?.data && typeof response.data === 'object' ? response.data : response
+    const { token, role } = extractLoginCredentials(payload)
+
     const name =
       payload?.name ||
       payload?.fullName ||
@@ -58,38 +45,36 @@ const Login = () => {
       payload?.data?.fullName ||
       payload?.data?.userName ||
       payload?.data?.user?.name ||
-      tokenPayload?.name ||
-      tokenPayload?.fullName ||
-      tokenPayload?.userName ||
-      tokenPayload?.username ||
-      pendingSignupName
+      ''
+
+    const pendingSignupName = localStorage.getItem('pendingSignupEmail') === email
+      ? localStorage.getItem('pendingSignupName')
+      : ''
+    const resolvedName = name || pendingSignupName
 
     if (!token || !role) {
       throw new Error("Login response did not contain token or role")
     }
 
-    const normalizedRole = String(role).toUpperCase()
-
-    setAuthSession(token, normalizedRole)
+    setAuthSession(token, role)
     localStorage.setItem("userEmail", email);
-    if (name) {
-      localStorage.setItem("userName", name);
+    if (resolvedName) {
+      localStorage.setItem("userName", resolvedName);
     }
 
     localStorage.removeItem('pendingSignupName')
     localStorage.removeItem('pendingSignupEmail')
 
-    if (normalizedRole === "CANDIDATE") {
+    if (role === "CANDIDATE") {
       localStorage.setItem("candidateEmail", email);
-      if (name) {
-        localStorage.setItem("candidateName", name);
+      if (resolvedName) {
+        localStorage.setItem("candidateName", resolvedName);
       }
     }
 
-    if(normalizedRole === "CANDIDATE"){
+    if (role === "CANDIDATE") {
       navigate(ROUTES.CANDIDATE_DASHBOARD)
-    }
-    else if (normalizedRole === 'ADMIN') {
+    } else if (role === 'ADMIN') {
       navigate(ROUTES.ADMIN_DASHBOARD)
     } else {
       navigate(ROUTES.HOME)

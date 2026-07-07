@@ -6,7 +6,7 @@ export const getApiErrorMessage = (requestError, fallbackMessage) => {
     requestError.message
 
   if (status === 401) {
-    return serverMessage || 'You are not authorized for this action. Please log in again.'
+    return serverMessage || 'Your session has expired. Please log out and sign in again as admin.'
   }
 
   if (status === 403) {

@@ -1,4 +1,5 @@
 import api from '../Api/Axios'
+import { getAuthHeaders, getStoredAuthToken } from '../utils/auth'
 import { normalizeReferral } from '../utils/normalizers'
 
 const buildReferralPayload = (referralData) => {
@@ -52,10 +53,20 @@ export const createReferral = async (applicationId, referralData) => {
     throw new Error('Application ID is required to create a referral.')
   }
 
+  const token = getStoredAuthToken()
+  if (!token) {
+    const authError = new Error('You are not logged in. Please sign in again.')
+    authError.response = { status: 401, data: { message: 'Authentication required. Please log in again.' } }
+    throw authError
+  }
+
   const response = await api.post(
     `/admin/applications/${applicationId}/referrals`,
     buildReferralPayload(referralData),
-    { skipAuthRedirect: true }
+    {
+      skipAuthRedirect: true,
+      headers: getAuthHeaders(),
+    }
   )
   return response.data?.data || response.data
 }

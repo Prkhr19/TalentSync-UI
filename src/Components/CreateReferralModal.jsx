@@ -87,8 +87,8 @@ const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSub
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-8">
-      <div className="w-full max-w-lg rounded-[2rem] border border-white/80 bg-white p-6 shadow-2xl sm:p-8">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-slate-900/50 px-4 py-8 sm:items-center sm:py-10">
+      <div className="my-auto w-full max-w-lg max-h-[calc(100vh-5rem)] overflow-y-auto rounded-[2rem] border border-white/80 bg-white p-6 shadow-2xl sm:p-8">
         <div className="border-b border-slate-200 pb-4">
           <h2 className="text-2xl font-semibold text-slate-950">Create Referral</h2>
           <p className="mt-2 text-sm text-slate-600">
@@ -197,7 +197,7 @@ const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSub
             Referred date defaults to today on the server if left empty. Application status will be set to REFERRED on success.
           </p>
 
-          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+          <div className="sticky bottom-0 -mx-6 flex flex-col-reverse gap-3 border-t border-slate-200 bg-white px-6 pb-1 pt-4 sm:-mx-8 sm:flex-row sm:justify-end sm:px-8">
             <button
               type="button"
               onClick={handleClose}
