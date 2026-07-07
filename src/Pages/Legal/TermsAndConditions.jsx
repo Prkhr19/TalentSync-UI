@@ -4,8 +4,8 @@ import { usePageMeta } from '../../utils/usePageMeta'
 
 const TermsAndConditions = () => {
   usePageMeta(
-    'Terms & Conditions | TalentSync',
-    'Read the Terms and Conditions governing your use of TalentSync recruitment and referral services.'
+    'Terms & Conditions | HireNex',
+    'Read the Terms and Conditions governing your use of HireNex recruitment and referral services.'
   )
 
   return (
@@ -20,7 +20,7 @@ const TermsAndConditions = () => {
             </h1>
             <p className="mt-4 text-sm text-slate-500">Last updated: June 26, 2026</p>
             <p className="mt-6 text-base leading-7 text-slate-600">
-              By accessing or using TalentSync, you agree to the following Terms & Conditions. Please read
+              By accessing or using HireNex, you agree to the following Terms & Conditions. Please read
               them carefully before creating an account or submitting your profile.
             </p>
 
@@ -37,17 +37,17 @@ const TermsAndConditions = () => {
               <section>
                 <h2 className="text-xl font-semibold text-slate-950">Recruitment Consultancy</h2>
                 <p className="mt-3">
-                  TalentSync operates as a recruitment consultancy platform. We help candidates build profiles,
+                  HireNex operates as a recruitment consultancy platform. We help candidates build profiles,
                   apply for opportunities, and receive referrals to hiring companies and recruitment partners.
-                  TalentSync facilitates the hiring process but does not act as the employer.
+                  HireNex facilitates the hiring process but does not act as the employer.
                 </p>
               </section>
 
               <section>
                 <h2 className="text-xl font-semibold text-slate-950">Referrals and Outcomes</h2>
                 <p className="mt-3">
-                  Job referrals made through TalentSync do not guarantee interviews, shortlisting, or employment.
-                  Hiring decisions are made solely by the respective companies and partners. TalentSync makes
+                  Job referrals made through HireNex do not guarantee interviews, shortlisting, or employment.
+                  Hiring decisions are made solely by the respective companies and partners. HireNex makes
                   reasonable efforts to match candidates with suitable opportunities but cannot guarantee
                   specific outcomes.
                 </p>
@@ -57,7 +57,7 @@ const TermsAndConditions = () => {
                 <h2 className="text-xl font-semibold text-slate-950">Fraudulent Profiles</h2>
                 <p className="mt-3">
                   Profiles that contain fraudulent, misleading, or impersonated information may be removed
-                  without notice. TalentSync reserves the right to suspend or terminate accounts that violate
+                  without notice. HireNex reserves the right to suspend or terminate accounts that violate
                   these terms or misuse the platform.
                 </p>
               </section>
@@ -65,7 +65,7 @@ const TermsAndConditions = () => {
               <section>
                 <h2 className="text-xl font-semibold text-slate-950">Platform Use</h2>
                 <p className="mt-3">
-                  You agree to use TalentSync only for lawful recruitment and career-related purposes. You
+                  You agree to use HireNex only for lawful recruitment and career-related purposes. You
                   may not attempt to access unauthorized areas of the platform, interfere with system security,
                   or misuse candidate or admin functionality.
                 </p>
@@ -74,7 +74,7 @@ const TermsAndConditions = () => {
               <section>
                 <h2 className="text-xl font-semibold text-slate-950">Changes to These Terms</h2>
                 <p className="mt-3">
-                  TalentSync may update these Terms & Conditions from time to time. Continued use of the
+                  HireNex may update these Terms & Conditions from time to time. Continued use of the
                   platform after changes are published constitutes acceptance of the updated terms. We
                   encourage users to review this page periodically.
                 </p>

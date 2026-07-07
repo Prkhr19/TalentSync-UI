@@ -1,9 +1,9 @@
-# TalentSync Top 20 Interview Questions (Last-Day Revision)
+# HireNex Top 20 Interview Questions (Last-Day Revision)
 
 Short, high-probability questions with concise answers for fresher interviews.
 
-## 1) What is TalentSync?
-TalentSync is a role-based job platform frontend where Candidates manage profile/applications and Admins manage companies, jobs, and applications.
+## 1) What is HireNex?
+HireNex is a role-based job platform frontend where Candidates manage profile/applications and Admins manage companies, jobs, and applications.
 
 ## 2) Which stack did you use?
 React + Vite + React Router + Axios + Tailwind CSS.

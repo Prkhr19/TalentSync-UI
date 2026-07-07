@@ -105,7 +105,7 @@ const Login = () => {
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <section className="max-w-xl">
             <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1 text-sm font-medium text-sky-700">
-              Welcome back to TalentSync
+              Welcome back to HireNex
             </span>
             <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
               Sign in to continue with a calm, focused workspace.
@@ -180,7 +180,7 @@ const Login = () => {
               </form>
 
               <p className="mt-6 text-center text-sm text-slate-600">
-                New to TalentSync?{' '}
+                New to HireNex?{' '}
                 <Link to={ROUTES.SIGNUP} className="font-semibold text-slate-900 transition hover:text-slate-600">
                   Create an account
                 </Link>

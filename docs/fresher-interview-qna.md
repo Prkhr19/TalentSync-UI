@@ -1,12 +1,12 @@
-# TalentSync Fresher Interview Q&A
+# HireNex Fresher Interview Q&A
 
-This Q&A is based on your actual TalentSync frontend project work (React + Vite + React Router + Axios + Tailwind).
+This Q&A is based on your actual HireNex frontend project work (React + Vite + React Router + Axios + Tailwind).
 
 ## 1) Project Overview
 
 ### Q1. Tell me about your project in 1-2 minutes.
 **Answer:**  
-TalentSync is a role-based job platform frontend with two user roles: Candidate and Admin. Candidates can update profile, upload resume, apply to jobs, and track application status. Admins can create companies/jobs, view applications, and review candidates. I worked on API integration, routing security, profile persistence, session handling, and response mapping across the app.
+HireNex is a role-based job platform frontend with two user roles: Candidate and Admin. Candidates can update profile, upload resume, apply to jobs, and track application status. Admins can create companies/jobs, view applications, and review candidates. I worked on API integration, routing security, profile persistence, session handling, and response mapping across the app.
 
 ### Q2. What was your core responsibility in this project?
 **Answer:**  

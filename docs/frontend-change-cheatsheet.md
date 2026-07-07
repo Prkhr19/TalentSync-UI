@@ -1,4 +1,4 @@
-# TalentSync Frontend Change Cheatsheet
+# HireNex Frontend Change Cheatsheet
 
 This is a revision-friendly summary of the important frontend changes made, with technical terminology and implementation details.
 

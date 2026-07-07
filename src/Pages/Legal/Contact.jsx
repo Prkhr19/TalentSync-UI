@@ -9,8 +9,8 @@ const Contact = () => {
   const [submitted, setSubmitted] = useState(false)
 
   usePageMeta(
-    'Contact Us | TalentSync',
-    'Get in touch with TalentSync for support, partnerships, privacy requests, and recruitment enquiries.'
+    'Contact Us | HireNex',
+    'Get in touch with HireNex for support, partnerships, privacy requests, and recruitment enquiries.'
   )
 
   const handleChange = (event) => {
@@ -31,7 +31,7 @@ const Contact = () => {
               Contact
             </span>
             <h1 className="mt-5 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-              Get in touch with TalentSync
+              Get in touch with HireNex
             </h1>
             <p className="mt-4 text-base leading-7 text-slate-600">
               Reach out for support, partnership enquiries, privacy requests, or questions about referrals
@@ -41,8 +41,8 @@ const Contact = () => {
             <div className="mt-8 space-y-4">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
                 <p className="text-sm font-medium text-slate-500">Business email</p>
-                <a href="mailto:talentsync.contact@gmail.com" className="mt-2 block text-base font-semibold text-slate-900">
-                  talentsync.contact@gmail.com
+                <a href="mailto:hirenex.contact@gmail.com" className="mt-2 block text-base font-semibold text-slate-900">
+                  hirenex.contact@gmail.com
                 </a>
               </div>
 

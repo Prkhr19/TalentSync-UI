@@ -4,8 +4,8 @@
 
   const PrivacyPolicy = () => {
     usePageMeta(
-      'Privacy Policy | TalentSync',
-      'Learn how TalentSync collects, uses, stores, and protects candidate information for recruitment and referral services.'
+      'Privacy Policy | HireNex',
+      'Learn how HireNex collects, uses, stores, and protects candidate information for recruitment and referral services.'
     )
 
     return (
@@ -20,7 +20,7 @@
             </h1>
             <p className="mt-4 text-sm text-slate-500">Last updated: June 26, 2026</p>
             <p className="mt-6 text-base leading-7 text-slate-600">
-              TalentSync is a recruitment consultancy platform. This Privacy Policy explains how we collect,
+              HireNex is a recruitment consultancy platform. This Privacy Policy explains how we collect,
               use, store, and protect your personal information when you use our services.
             </p>
 
@@ -28,7 +28,7 @@
               <section>
                 <h2 className="text-xl font-semibold text-slate-950">Information We Collect</h2>
                 <p className="mt-3">
-                  When you create a candidate profile or use TalentSync, we may collect the following information:
+                  When you create a candidate profile or use HireNex, we may collect the following information:
                 </p>
                 <ul className="mt-4 list-disc space-y-2 pl-5">
                   <li>Name</li>
@@ -59,7 +59,7 @@
               <section>
                 <h2 className="text-xl font-semibold text-slate-950">Resume Storage</h2>
                 <p className="mt-3">
-                  Resumes are uploaded securely to TalentSync and stored for recruitment purposes. Your resume
+                  Resumes are uploaded securely to HireNex and stored for recruitment purposes. Your resume
                   is used to assess your qualifications, match you with relevant opportunities, and share your
                   profile with authorized hiring partners when appropriate referrals are made.
                 </p>
@@ -77,7 +77,7 @@
 
               <section>
                 <h2 className="text-xl font-semibold text-slate-950">Security</h2>
-                <p className="mt-3">TalentSync takes reasonable measures to protect your data, including:</p>
+                <p className="mt-3">HireNex takes reasonable measures to protect your data, including:</p>
                 <ul className="mt-4 list-disc space-y-2 pl-5">
                   <li>Secure authentication for user accounts</li>
                   <li>Role-based authorization to restrict access to sensitive data</li>
@@ -88,12 +88,12 @@
 
               <section>
                 <h2 className="text-xl font-semibold text-slate-950">Your Rights</h2>
-                <p className="mt-3">As a TalentSync candidate, you may:</p>
+                <p className="mt-3">As a HireNex candidate, you may:</p>
                 <ul className="mt-4 list-disc space-y-2 pl-5">
                   <li>Update your profile information at any time</li>
                   <li>Replace your resume with an updated PDF</li>
                   <li>Request deletion of your profile and associated data</li>
-                  <li>Contact TalentSync regarding how your data is collected, used, or stored</li>
+                  <li>Contact HireNex regarding how your data is collected, used, or stored</li>
                 </ul>
               </section>
 

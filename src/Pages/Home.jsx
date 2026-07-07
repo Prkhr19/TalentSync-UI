@@ -39,7 +39,7 @@ const Home = () => {
                 Find the right role without the clutter.
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
-                TalentSync brings job seekers and employers together in a simple, focused workspace.
+                HireNex brings job seekers and employers together in a simple, focused workspace.
                 Search jobs, manage applications, and move through the hiring process with less noise.
               </p>
 
@@ -127,7 +127,7 @@ const Home = () => {
                   Set up your profile and start moving.
                 </h2>
                 <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                  Join TalentSync, build a tidy profile, and browse opportunities in a cleaner workflow.
+                  Join HireNex, build a tidy profile, and browse opportunities in a cleaner workflow.
                 </p>
               </div>
 

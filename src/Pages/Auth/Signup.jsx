@@ -42,7 +42,7 @@ const Signup = () => {
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <section className="max-w-xl">
             <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1 text-sm font-medium text-sky-700">
-              Join TalentSync today
+              Join HireNex today
             </span>
             <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
               Create a clean profile and start your hiring journey.
@@ -70,7 +70,7 @@ const Signup = () => {
               <div className="border-b border-slate-200 pb-5">
                 <h2 className="text-2xl font-semibold text-slate-950">Sign up</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Create your candidate account on TalentSync.
+                  Create your candidate account on HireNex.
                 </p>
               </div>
 
