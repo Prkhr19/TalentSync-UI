@@ -74,8 +74,8 @@ const mapCandidateSearchParams = (params = {}) => {
   return mapped
 }
 
-export const getJobApplications = async (jobId) => {
-  const response = await api.get(`/admin/jobs/${jobId}/applications`)
+export const getJobApplications = async (jobId, options = {}) => {
+  const response = await api.get(`/admin/jobs/${jobId}/applications`, options)
   const payload = response.data?.data || response.data
   const list = Array.isArray(payload)
     ? payload
@@ -108,7 +108,7 @@ export const getAllApplications = async () => {
   const applicationsByJob = await Promise.all(
     jobs.map(async (job) => {
       try {
-        const applications = await getJobApplications(job.id)
+        const applications = await getJobApplications(job.id, { skipAuthRedirect: true })
         return applications.map((application) =>
           normalizeApplication(application, {
             id: job.id,
@@ -140,6 +140,10 @@ export const getCandidateById = async (candidateId) => {
 }
 
 export const updateApplicationStatus = async (applicationId, status) => {
-  const response = await api.patch(`/admin/applications/${applicationId}/status`, { status })
+  const response = await api.patch(
+    `/admin/applications/${applicationId}/status`,
+    { status },
+    { skipAuthRedirect: true }
+  )
   return response.data?.data || response.data
 }

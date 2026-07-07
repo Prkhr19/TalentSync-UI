@@ -8,6 +8,7 @@ import {
   getApplicationStatusLabel,
   getReferralStatusLabel,
 } from '../../utils/applicationConstants'
+import { getApiErrorMessage } from '../../utils/apiErrors'
 import { formatDate } from '../../utils/formatters'
 
 const selectClassName =
@@ -94,11 +95,7 @@ const AdminReferrals = () => {
       )
       toast.success('Referral status updated successfully.')
     } catch (requestError) {
-      const message =
-        requestError.response?.data?.message ||
-        requestError.response?.data?.error ||
-        'Failed to update referral status.'
-      toast.error(message)
+      toast.error(getApiErrorMessage(requestError, 'Failed to update referral status.'))
     } finally {
       setUpdatingId(null)
     }

@@ -1,18 +1,31 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const initialForm = {
   companyName: '',
   contactName: '',
   contactEmail: '',
   remarks: '',
+  referredDate: '',
+  followUpDate: '',
+  interviewDate: '',
+  joiningDate: '',
 }
 
 const inputClassName =
   'w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-4 focus:ring-sky-100'
 
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
 const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSubmit }) => {
   const [form, setForm] = useState(initialForm)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (isOpen) {
+      setForm(initialForm)
+      setError('')
+    }
+  }, [isOpen, application?.applicationId])
 
   if (!isOpen || !application) return null
 
@@ -24,8 +37,28 @@ const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSub
   const handleSubmit = (event) => {
     event.preventDefault()
 
-    if (!form.companyName.trim() || !form.contactName.trim() || !form.contactEmail.trim()) {
-      setError('Company, recruiter name, and recruiter email are required.')
+    if (!form.companyName.trim()) {
+      setError('Company name is required.')
+      return
+    }
+
+    if (!form.contactName.trim()) {
+      setError('Contact name is required.')
+      return
+    }
+
+    if (!form.contactEmail.trim()) {
+      setError('Contact email is required.')
+      return
+    }
+
+    if (!isValidEmail(form.contactEmail.trim())) {
+      setError('Please enter a valid contact email address.')
+      return
+    }
+
+    if (form.remarks.trim().length > 500) {
+      setError('Remarks must be 500 characters or fewer.')
       return
     }
 
@@ -39,6 +72,10 @@ const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSub
       contactName: form.contactName.trim(),
       contactEmail: form.contactEmail.trim(),
       remarks: form.remarks.trim() || undefined,
+      referredDate: form.referredDate || undefined,
+      followUpDate: form.followUpDate || undefined,
+      interviewDate: form.interviewDate || undefined,
+      joiningDate: form.joiningDate || undefined,
     })
   }
 
@@ -68,37 +105,39 @@ const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSub
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="companyName">
-              Company
+              Company Name *
             </label>
             <input
               id="companyName"
               name="companyName"
               value={form.companyName}
               onChange={handleChange}
-              placeholder="Client company name"
+              placeholder="ABC Pvt Ltd"
               className={inputClassName}
               disabled={isSubmitting}
+              required
             />
           </div>
 
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="contactName">
-              Recruiter Name
+              Contact Name *
             </label>
             <input
               id="contactName"
               name="contactName"
               value={form.contactName}
               onChange={handleChange}
-              placeholder="HR or recruiter contact"
+              placeholder="Jane HR"
               className={inputClassName}
               disabled={isSubmitting}
+              required
             />
           </div>
 
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="contactEmail">
-              Recruiter Email
+              Contact Email *
             </label>
             <input
               id="contactEmail"
@@ -106,15 +145,16 @@ const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSub
               type="email"
               value={form.contactEmail}
               onChange={handleChange}
-              placeholder="contact@company.com"
+              placeholder="jane.hr@abc.com"
               className={inputClassName}
               disabled={isSubmitting}
+              required
             />
           </div>
 
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="remarks">
-              Notes
+              Remarks
             </label>
             <textarea
               id="remarks"
@@ -123,11 +163,39 @@ const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSub
               onChange={handleChange}
               rows={3}
               maxLength={500}
-              placeholder="Optional referral notes"
+              placeholder="Strong backend candidate"
               className={inputClassName}
               disabled={isSubmitting}
             />
           </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              ['referredDate', 'Referred Date'],
+              ['followUpDate', 'Follow-up Date'],
+              ['interviewDate', 'Interview Date'],
+              ['joiningDate', 'Joining Date'],
+            ].map(([name, label]) => (
+              <div key={name}>
+                <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor={name}>
+                  {label}
+                </label>
+                <input
+                  type="date"
+                  id={name}
+                  name={name}
+                  value={form[name]}
+                  onChange={handleChange}
+                  className={inputClassName}
+                  disabled={isSubmitting}
+                />
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs text-slate-500">
+            Referred date defaults to today on the server if left empty. Application status will be set to REFERRED on success.
+          </p>
 
           <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
             <button

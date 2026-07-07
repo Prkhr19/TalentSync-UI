@@ -10,6 +10,7 @@ import {
   getApplicationStatusLabel,
   getApplicationStatusStyle,
 } from '../../utils/applicationConstants'
+import { getApiErrorMessage } from '../../utils/apiErrors'
 import { formatDate } from '../../utils/formatters'
 
 const selectClassName =
@@ -94,11 +95,7 @@ const AdminApplications = () => {
       )
       toast.success('Application status updated successfully.')
     } catch (requestError) {
-      const message =
-        requestError.response?.data?.message ||
-        requestError.response?.data?.error ||
-        'Failed to update application status.'
-      toast.error(message)
+      toast.error(getApiErrorMessage(requestError, 'Failed to update application status.'))
     } finally {
       setUpdatingId(null)
     }
@@ -107,29 +104,36 @@ const AdminApplications = () => {
   const handleCreateReferral = async (referralData) => {
     if (!referralTarget) return
 
+    const applicationId = referralTarget.applicationId || referralTarget.id
+    if (!applicationId) {
+      toast.error('Application ID is missing. Please refresh and try again.')
+      return
+    }
+
     setCreatingReferral(true)
 
     try {
-      await createReferral(referralTarget.applicationId, referralData)
+      await createReferral(applicationId, referralData)
       setApplications((current) =>
         current.map((application) =>
-          application.applicationId === referralTarget.applicationId
+          (application.applicationId || application.id) === applicationId
             ? { ...application, status: 'REFERRED' }
             : application
         )
       )
       setStatusDrafts((current) => ({
         ...current,
-        [referralTarget.applicationId]: 'REFERRED',
+        [applicationId]: 'REFERRED',
       }))
       setReferralTarget(null)
       toast.success('Referral created. Application status is now REFERRED.')
     } catch (requestError) {
-      const message =
-        requestError.response?.data?.message ||
-        requestError.response?.data?.error ||
-        'Failed to create referral.'
-      toast.error(message)
+      toast.error(getApiErrorMessage(requestError, 'Failed to create referral.'))
+      console.error('Create referral failed:', {
+        applicationId,
+        url: `/admin/applications/${applicationId}/referrals`,
+        error: requestError.response?.data || requestError.message,
+      })
     } finally {
       setCreatingReferral(false)
     }
