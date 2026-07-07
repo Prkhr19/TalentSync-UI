@@ -9,6 +9,7 @@ const AUTH_STORAGE_KEYS = [
   'candidateName',
   'candidateEducation',
   'candidateSkills',
+  'candidateProfileCache',
   'adminCompanyName',
   'adminCompanyLocation',
   'adminCompanyWebsite',
@@ -57,7 +58,7 @@ api.interceptors.response.use(
     const requestUrl = error.config?.url || ''
     const isAuthRequest = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/signup')
 
-    if (status === 401 && !isAuthRequest) {
+    if (status === 401 && !isAuthRequest && !error.config?.skipAuthRedirect) {
       clearAuthSession()
 
       if (!window.location.pathname.startsWith('/login')) {

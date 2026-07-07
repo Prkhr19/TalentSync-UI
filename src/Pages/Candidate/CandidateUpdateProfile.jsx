@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getCandidateProfile, getResumeMetadata, mapProfileToForm, updateCandidateProfile, uploadResume } from '../../Services/CandidateService'
+import { cacheCandidateProfile, getCachedCandidateProfile, getCandidateProfile, getResumeMetadata, mapProfileToForm, updateCandidateProfile, uploadResume } from '../../Services/CandidateService'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
 
@@ -52,7 +52,8 @@ const CandidateUpdateProfile = () => {
   useEffect(() => {
     Promise.all([
       getCandidateProfile().catch((requestError) => {
-        if (requestError.response?.status !== 404) {
+        const status = requestError.response?.status
+        if (status !== 404 && status !== 401) {
           console.error('Error loading profile:', requestError)
         }
         return null
@@ -70,9 +71,15 @@ const CandidateUpdateProfile = () => {
         if (profile) {
           const formData = mapProfileToForm(profile)
           setProfileData((current) => ({ ...current, ...formData }))
+          cacheCandidateProfile(formData)
           localStorage.setItem('candidateName', formData.name)
           localStorage.setItem('candidateEducation', formData.highestQualification)
           localStorage.setItem('candidateSkills', formData.skills)
+        } else {
+          const cachedProfile = getCachedCandidateProfile()
+          if (cachedProfile) {
+            setProfileData((current) => ({ ...current, ...cachedProfile }))
+          }
         }
 
         const resumeName = resumeResponse?.fileName || ''
@@ -159,17 +166,13 @@ const CandidateUpdateProfile = () => {
       }
 
       const savedProfile = await updateCandidateProfile(profileData)
-      if (savedProfile) {
-        const formData = mapProfileToForm(savedProfile)
-        setProfileData((current) => ({ ...current, ...formData }))
-        localStorage.setItem('candidateName', formData.name)
-        localStorage.setItem('candidateEducation', formData.highestQualification)
-        localStorage.setItem('candidateSkills', formData.skills)
-      } else {
-        localStorage.setItem('candidateName', profileData.name)
-        localStorage.setItem('candidateEducation', profileData.highestQualification)
-        localStorage.setItem('candidateSkills', profileData.skills)
-      }
+      const formData = savedProfile ? mapProfileToForm(savedProfile) : profileData
+
+      setProfileData((current) => ({ ...current, ...formData }))
+      cacheCandidateProfile(formData)
+      localStorage.setItem('candidateName', formData.name)
+      localStorage.setItem('candidateEducation', formData.highestQualification || profileData.highestQualification)
+      localStorage.setItem('candidateSkills', formData.skills)
       setSuccess('Your profile has been updated successfully.')
     } catch (requestError) {
       const message =

@@ -1,7 +1,22 @@
 import api from '../Api/Axios'
 
+export const CANDIDATE_PROFILE_CACHE_KEY = 'candidateProfileCache'
+
+export const cacheCandidateProfile = (formData) => {
+  localStorage.setItem(CANDIDATE_PROFILE_CACHE_KEY, JSON.stringify(formData))
+}
+
+export const getCachedCandidateProfile = () => {
+  try {
+    const cached = localStorage.getItem(CANDIDATE_PROFILE_CACHE_KEY)
+    return cached ? JSON.parse(cached) : null
+  } catch {
+    return null
+  }
+}
+
 export const getCandidateProfile = async () => {
-  const response = await api.get('/candidate/profile')
+  const response = await api.get('/candidate/profile', { skipAuthRedirect: true })
   return response.data?.data || response.data
 }
 
@@ -32,6 +47,7 @@ const buildProfilePayload = (profileData) => ({
   phoneNo: profileData.phoneNo,
   skills: profileData.skills,
   experience: profileData.experience,
+  education: profileData.highestQualification,
   location: profileData.location,
   linkedInUrl: profileData.linkedInUrl,
   totalExperience: profileData.totalExperience,
@@ -54,7 +70,7 @@ const mapProfileToForm = (profile) => ({
   totalExperience: profile.totalExperience || '',
   currentCompany: profile.currentCompany || '',
   currentDesignation: profile.currentDesignation || '',
-  highestQualification: profile.highestQualification || '',
+  highestQualification: profile.highestQualification || profile.education || '',
   graduationYear: profile.graduationYear ?? '',
   currentCTC: profile.currentCtc ?? '',
   expectedCTC: profile.expectedCtc ?? '',
