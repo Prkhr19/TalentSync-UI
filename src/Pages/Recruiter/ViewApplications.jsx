@@ -208,7 +208,7 @@ const ViewApplications = () => {
             <section className="mt-8 grid gap-5 lg:grid-cols-2">
               {applications.map((application) => {
                 const applicationId = application.applicationId || application.id
-                const candidateName = application.name || application.fullName || 'Candidate'
+                const candidateName = application.name || application.fullName || application.candidateName || 'Candidate'
 
                 return (
                   <article
@@ -237,7 +237,7 @@ const ViewApplications = () => {
                       </div>
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Education</p>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">{application.education || 'Not provided'}</p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">{application.education || application.highestQualification || 'Not provided'}</p>
                       </div>
                     </div>
 

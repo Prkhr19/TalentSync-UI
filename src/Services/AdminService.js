@@ -74,7 +74,44 @@ const mapCandidateSearchParams = (params = {}) => {
 
 export const getJobApplications = async (jobId) => {
   const response = await api.get(`/admin/jobs/${jobId}/applications`)
-  return response.data?.data || response.data
+  const payload = response.data?.data || response.data
+  const list = Array.isArray(payload)
+    ? payload
+    : payload?.applications || payload?.content || []
+
+  return list.map((application) => {
+    const candidate = application.candidate || application.candidateDetails || {}
+
+    return {
+      ...application,
+      applicationId: application.applicationId || application.id,
+      name:
+        application.name ||
+        application.fullName ||
+        application.candidateName ||
+        candidate.fullName ||
+        candidate.name ||
+        'Candidate',
+      status: application.status || application.applicationStatus,
+      appliedAt: application.appliedAt || application.createdAt || application.appliedDate,
+      experience:
+        application.experience ||
+        application.totalExperience ||
+        candidate.experience ||
+        candidate.totalExperience,
+      education:
+        application.education ||
+        application.highestQualification ||
+        candidate.education ||
+        candidate.highestQualification,
+      skills: application.skills || candidate.skills,
+      resumeUrl:
+        application.resumeUrl ||
+        application.resumePath ||
+        candidate.resumeUrl ||
+        candidate.resumePath,
+    }
+  })
 }
 
 export const getCandidates = async (params = {}) => {
