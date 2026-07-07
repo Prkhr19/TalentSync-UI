@@ -208,7 +208,7 @@ const ViewApplications = () => {
             <section className="mt-8 grid gap-5 lg:grid-cols-2">
               {applications.map((application) => {
                 const applicationId = application.applicationId || application.id
-                const candidateName = application.name || application.fullName || application.candidateName || 'Candidate'
+                const candidateName = application.candidateName || application.name || application.fullName || 'Candidate'
 
                 return (
                   <article
@@ -232,36 +232,36 @@ const ViewApplications = () => {
 
                     <div className="mt-6 grid gap-3 sm:grid-cols-2">
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                        <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Experience</p>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">{application.experience || application.totalExperience || 'Not provided'}</p>
+                        <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Candidate ID</p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">{application.candidateId || 'Not available'}</p>
                       </div>
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                        <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Education</p>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">{application.education || application.highestQualification || 'Not provided'}</p>
+                        <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Candidate Email</p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-900 break-all">{application.candidateEmail || 'Not available'}</p>
                       </div>
                     </div>
 
                     <div className="mt-3 flex-1 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Skills</p>
+                      <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Applied Job Description</p>
                       <p className="mt-2 text-sm leading-6 text-slate-700">
-                        {Array.isArray(application.skills) ? application.skills.join(', ') : application.skills || 'Not provided'}
+                        {application.appliedJobDescription || 'Not available'}
                       </p>
                     </div>
 
-                    {application.resumeUrl || application.resumePath ? (
-                      <a
-                        href={application.resumeUrl || application.resumePath}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
-                      >
-                        View Resume
-                      </a>
-                    ) : (
-                      <span className="mt-5 inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-medium text-slate-400">
-                        Resume unavailable
-                      </span>
-                    )}
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Applied Salary</p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">
+                          {application.appliedSalary !== undefined && application.appliedSalary !== null
+                            ? `₹${Number(application.appliedSalary).toLocaleString('en-IN')}`
+                            : 'Not available'}
+                        </p>
+                      </div>
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Job Title</p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">{application.jobTitle || job?.title || 'Not available'}</p>
+                      </div>
+                    </div>
                   </article>
                 )
               })}

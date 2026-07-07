@@ -96,7 +96,10 @@ export const getJobApplications = async (jobId) => {
 
     return {
       ...application,
-      applicationId: application.applicationId || application.id,
+      applicationId: pickFirst(application.applicationId, application.id),
+      jobId: pickFirst(application.jobId, application.job?.id, jobId),
+      jobTitle: pickFirst(application.jobTitle, application.job?.title),
+      candidateId: pickFirst(application.candidateId, candidate.id, candidate.candidateId),
       name: pickFirst(
         application.name,
         application.fullName,
@@ -107,8 +110,18 @@ export const getJobApplications = async (jobId) => {
         profile.name,
         'Candidate'
       ),
+      candidateName: pickFirst(
+        application.candidateName,
+        application.name,
+        application.fullName,
+        candidate.fullName,
+        candidate.name
+      ),
+      candidateEmail: pickFirst(application.candidateEmail, candidate.email, profile.email),
       status: pickFirst(application.status, application.applicationStatus),
       appliedAt: pickFirst(application.appliedAt, application.createdAt, application.appliedDate),
+      appliedSalary: pickFirst(application.appliedSalary, application.salary),
+      appliedJobDescription: pickFirst(application.appliedJobDescription, application.jobDescription, application.description),
       experience: pickFirst(
         application.experience,
         application.totalExperience,
