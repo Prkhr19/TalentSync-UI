@@ -54,8 +54,8 @@ const Navbar = () => {
                 Dashboard
               </Link>
               {isCandidate && (
-                <Link to={ROUTES.CANDIDATE_REFERRALS} className="hidden transition hover:text-slate-900 sm:inline">
-                  Referrals
+                <Link to={ROUTES.APPPLICATION_STATUS} className="hidden transition hover:text-slate-900 sm:inline">
+                  Applications
                 </Link>
               )}
               <button

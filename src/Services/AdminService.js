@@ -1,4 +1,6 @@
 import api from '../Api/Axios'
+import { getAllJobs } from './JobService'
+import { normalizeApplication } from '../utils/normalizers'
 
 export const getCompanies = async () => {
   const response = await api.get('/admin/companies')
@@ -79,81 +81,47 @@ export const getJobApplications = async (jobId) => {
     ? payload
     : payload?.applications || payload?.content || []
 
-  const pickFirst = (...values) => values.find((value) => value !== undefined && value !== null && value !== '')
+  return list.map((application) => normalizeApplication(application, { id: jobId }))
+}
 
-  return list.map((application) => {
-    const candidate = application.candidate || application.candidateDetails || {}
-    const profile = candidate.professionalInformation || candidate.profile || application.professionalInformation || {}
-    const resume = application.resume || candidate.resume || {}
-    const rawSkills = pickFirst(application.skills, candidate.skills, profile.skills)
-    const normalizedSkills = Array.isArray(rawSkills)
-      ? rawSkills
-      : typeof rawSkills === 'string'
-        ? rawSkills
-        : Array.isArray(rawSkills?.skills)
-          ? rawSkills.skills
-          : rawSkills?.name || rawSkills?.value || ''
+export const getAllApplications = async () => {
+  try {
+    const response = await api.get('/admin/applications')
+    const payload = response.data?.data || response.data
+    const list = Array.isArray(payload)
+      ? payload
+      : payload?.applications || payload?.content || []
 
-    return {
-      ...application,
-      applicationId: pickFirst(application.applicationId, application.id),
-      jobId: pickFirst(application.jobId, application.job?.id, jobId),
-      jobTitle: pickFirst(application.jobTitle, application.job?.title),
-      candidateId: pickFirst(application.candidateId, candidate.id, candidate.candidateId),
-      name: pickFirst(
-        application.name,
-        application.fullName,
-        application.candidateName,
-        candidate.fullName,
-        candidate.name,
-        profile.fullName,
-        profile.name,
-        'Candidate'
-      ),
-      candidateName: pickFirst(
-        application.candidateName,
-        application.name,
-        application.fullName,
-        candidate.fullName,
-        candidate.name
-      ),
-      candidateEmail: pickFirst(application.candidateEmail, candidate.email, profile.email),
-      status: pickFirst(application.status, application.applicationStatus),
-      appliedAt: pickFirst(application.appliedAt, application.createdAt, application.appliedDate),
-      appliedSalary: pickFirst(application.appliedSalary, application.salary),
-      appliedJobDescription: pickFirst(application.appliedJobDescription, application.jobDescription, application.description),
-      experience: pickFirst(
-        application.experience,
-        application.totalExperience,
-        candidate.experience,
-        candidate.totalExperience,
-        profile.experience,
-        profile.totalExperience
-      ),
-      education: pickFirst(
-        application.education,
-        application.highestQualification,
-        candidate.education,
-        candidate.highestQualification,
-        profile.education,
-        profile.highestQualification
-      ),
-      skills: normalizedSkills,
-      resumeUrl: pickFirst(
-        application.resumeUrl,
-        application.resumePath,
-        application.cvUrl,
-        candidate.resumeUrl,
-        candidate.resumePath,
-        candidate.cvUrl,
-        profile.resumeUrl,
-        profile.resumePath,
-        resume.resumeUrl,
-        resume.fileUrl,
-        resume.secureUrl
-      ),
+    if (list.length > 0) {
+      return list.map((application) => normalizeApplication(application))
     }
-  })
+  } catch (requestError) {
+    if (requestError.response?.status !== 404) {
+      console.warn('GET /admin/applications unavailable, falling back to per-job aggregation.', requestError)
+    }
+  }
+
+  const jobsPayload = await getAllJobs()
+  const jobs = Array.isArray(jobsPayload) ? jobsPayload : jobsPayload?.jobs || jobsPayload?.content || []
+
+  const applicationsByJob = await Promise.all(
+    jobs.map(async (job) => {
+      try {
+        const applications = await getJobApplications(job.id)
+        return applications.map((application) =>
+          normalizeApplication(application, {
+            id: job.id,
+            title: job.title,
+            companyName: job.companyName,
+          })
+        )
+      } catch {
+        return []
+      }
+    })
+  )
+
+  return applicationsByJob.flat()
 }
 
 export const getCandidates = async (params = {}) => {
