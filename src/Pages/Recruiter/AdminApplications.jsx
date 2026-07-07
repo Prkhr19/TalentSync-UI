@@ -291,6 +291,11 @@ const AdminApplications = () => {
                                 Create Referral
                               </button>
                             )}
+                            {!isReferred && !canCreateReferral && (
+                              <span className="text-xs text-slate-500">
+                                Shortlist and save to enable referral
+                              </span>
+                            )}
                           </div>
                         </td>
                       </tr>

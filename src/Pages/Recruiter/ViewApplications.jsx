@@ -1,50 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import CreateReferralModal from '../../Components/CreateReferralModal'
 import { ROUTES } from '../../Routes/Routes'
 import { getJobApplications, updateApplicationStatus } from '../../Services/AdminService'
+import { createReferral } from '../../Services/ReferralService'
 import { getJobById } from '../../Services/JobService'
+import {
+  APPLICATION_STATUS_OPTIONS,
+  getApplicationStatusLabel,
+  getApplicationStatusStyle,
+} from '../../utils/applicationConstants'
+import { formatDate } from '../../utils/formatters'
 
-const statusOptions = [
-  { value: 'APPLIED', label: 'Applied' },
-  { value: 'SCREENING', label: 'Screening' },
-  { value: 'SHORTLISTED', label: 'Shortlisted' },
-  { value: 'REFERRED', label: 'Referred' },
-  { value: 'INTERVIEW', label: 'Interview' },
-  { value: 'SELECTED', label: 'Selected' },
-  { value: 'REJECTED', label: 'Rejected' },
-]
-
-const getStatusLabel = (status) => {
-  const option = statusOptions.find((item) => item.value === status)
-  return option?.label || status || 'Pending'
-}
-
-const getStatusStyle = (status) => {
-  const styles = {
-    APPLIED: 'border-amber-200 bg-amber-50 text-amber-700',
-    SCREENING: 'border-sky-200 bg-sky-50 text-sky-700',
-    SHORTLISTED: 'border-cyan-200 bg-cyan-50 text-cyan-700',
-    REFERRED: 'border-indigo-200 bg-indigo-50 text-indigo-700',
-    INTERVIEW: 'border-violet-200 bg-violet-50 text-violet-700',
-    SELECTED: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-    REJECTED: 'border-rose-200 bg-rose-50 text-rose-700',
-  }
-
-  return styles[status] || styles.APPLIED
-}
-
-const formatDate = (date) => {
-  if (!date) return 'Date unavailable'
-
-  const parsedDate = new Date(date)
-  if (Number.isNaN(parsedDate.getTime())) return date
-
-  return new Intl.DateTimeFormat('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  }).format(parsedDate)
-}
+const selectClassName =
+  'w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-sky-100'
 
 const getInitials = (name) => {
   if (!name) return 'CA'
@@ -57,17 +27,14 @@ const getInitials = (name) => {
     .join('')
 }
 
-const selectClassName =
-  'w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-sky-100'
-
 const ViewApplications = () => {
   const { jobId } = useParams()
   const [job, setJob] = useState(null)
   const [applications, setApplications] = useState([])
   const [statusDrafts, setStatusDrafts] = useState({})
   const [savingId, setSavingId] = useState(null)
-  const [statusError, setStatusError] = useState('')
-  const [statusSuccess, setStatusSuccess] = useState('')
+  const [referralTarget, setReferralTarget] = useState(null)
+  const [creatingReferral, setCreatingReferral] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -106,45 +73,11 @@ const ViewApplications = () => {
   }
 
   useEffect(() => {
-    let cancelled = false
-
-    const fetchData = async () => {
-      setLoading(true)
-      setError('')
-
-      try {
-        const [jobResponse, applicationsResponse] = await Promise.all([
-          getJobById(jobId).catch(() => null),
-          getJobApplications(jobId),
-        ])
-
-        if (cancelled) return
-
-        setJob(jobResponse?.job || jobResponse)
-        const list = Array.isArray(applicationsResponse)
-          ? applicationsResponse
-          : applicationsResponse?.applications || applicationsResponse?.content || []
-        setApplications(list)
-        syncStatusDrafts(list)
-      } catch (requestError) {
-        if (cancelled) return
-        console.error('Error fetching applications:', requestError)
-        setError('We could not load applications for this job. Please try again.')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    fetchData()
-    return () => {
-      cancelled = true
-    }
+    loadData()
   }, [jobId])
 
   const handleStatusChange = (applicationId, status) => {
     setStatusDrafts((current) => ({ ...current, [applicationId]: status }))
-    setStatusError('')
-    setStatusSuccess('')
   }
 
   const handleSaveStatus = async (applicationId) => {
@@ -152,8 +85,6 @@ const ViewApplications = () => {
     if (!status) return
 
     setSavingId(applicationId)
-    setStatusError('')
-    setStatusSuccess('')
 
     try {
       await updateApplicationStatus(applicationId, status)
@@ -164,16 +95,46 @@ const ViewApplications = () => {
             : application
         )
       )
-      setStatusSuccess('Application status updated successfully.')
+      toast.success('Application status updated successfully.')
     } catch (requestError) {
       const message =
         requestError.response?.data?.message ||
         requestError.response?.data?.error ||
         'Failed to update application status. Please try again.'
-      setStatusError(message)
+      toast.error(message)
       console.error('Error updating application status:', requestError)
     } finally {
       setSavingId(null)
+    }
+  }
+
+  const handleCreateReferral = async (referralData) => {
+    if (!referralTarget) return
+
+    setCreatingReferral(true)
+
+    try {
+      await createReferral(referralTarget.applicationId, referralData)
+      const applicationId = referralTarget.applicationId
+
+      setApplications((current) =>
+        current.map((application) =>
+          (application.applicationId || application.id) === applicationId
+            ? { ...application, status: 'REFERRED' }
+            : application
+        )
+      )
+      setStatusDrafts((current) => ({ ...current, [applicationId]: 'REFERRED' }))
+      setReferralTarget(null)
+      toast.success('Referral created. Application status is now REFERRED.')
+    } catch (requestError) {
+      const message =
+        requestError.response?.data?.message ||
+        requestError.response?.data?.error ||
+        'Failed to create referral.'
+      toast.error(message)
+    } finally {
+      setCreatingReferral(false)
     }
   }
 
@@ -201,6 +162,12 @@ const ViewApplications = () => {
                     ? `Applications submitted for ${job.title}.`
                     : 'Review candidates who applied to this job.'}
                 </p>
+                <Link
+                  to={ROUTES.ADMIN_APPLICATIONS}
+                  className="mt-4 inline-flex text-sm font-semibold text-sky-700 underline underline-offset-4"
+                >
+                  View all applications
+                </Link>
               </div>
 
               {!loading && !error && (
@@ -260,24 +227,14 @@ const ViewApplications = () => {
             </section>
           )}
 
-          {statusError && (
-            <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              {statusError}
-            </div>
-          )}
-
-          {statusSuccess && (
-            <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              {statusSuccess}
-            </div>
-          )}
-
           {!loading && !error && applications.length > 0 && (
             <section className="mt-8 grid gap-5 lg:grid-cols-2">
               {applications.map((application) => {
                 const applicationId = application.applicationId || application.id
                 const candidateName = application.candidateName || application.name || application.fullName || 'Candidate'
                 const selectedStatus = statusDrafts[applicationId] ?? application.status ?? 'APPLIED'
+                const isReferred = application.status === 'REFERRED'
+                const canCreateReferral = application.status === 'SHORTLISTED'
                 const hasStatusChange = selectedStatus !== application.status
 
                 return (
@@ -295,8 +252,8 @@ const ViewApplications = () => {
                           <p className="mt-1 text-sm text-slate-500">Applied {formatDate(application.appliedAt)}</p>
                         </div>
                       </div>
-                      <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold ${getStatusStyle(application.status)}`}>
-                        {getStatusLabel(application.status)}
+                      <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold ${getApplicationStatusStyle(application.status)}`}>
+                        {getApplicationStatusLabel(application.status)}
                       </span>
                     </div>
 
@@ -340,26 +297,51 @@ const ViewApplications = () => {
                       >
                         Update application status
                       </label>
-                      <select
-                        id={`status-${applicationId}`}
-                        value={selectedStatus}
-                        onChange={(event) => handleStatusChange(applicationId, event.target.value)}
-                        className={selectClassName}
-                      >
-                        {statusOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        type="button"
-                        onClick={() => handleSaveStatus(applicationId)}
-                        disabled={savingId === applicationId || !hasStatusChange}
-                        className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {savingId === applicationId ? 'Saving...' : 'Save Status'}
-                      </button>
+
+                      {isReferred ? (
+                        <p className="text-sm text-slate-600">
+                          This application has been referred. Manage referral progress from the Referrals page.
+                        </p>
+                      ) : (
+                        <>
+                          <select
+                            id={`status-${applicationId}`}
+                            value={selectedStatus}
+                            onChange={(event) => handleStatusChange(applicationId, event.target.value)}
+                            className={selectClassName}
+                            disabled={savingId === applicationId}
+                          >
+                            {APPLICATION_STATUS_OPTIONS.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                          <button
+                            type="button"
+                            onClick={() => handleSaveStatus(applicationId)}
+                            disabled={savingId === applicationId || !hasStatusChange}
+                            className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {savingId === applicationId ? 'Saving...' : 'Update Status'}
+                          </button>
+                          {!canCreateReferral && application.status !== 'REFERRED' && (
+                            <p className="mt-3 text-xs text-slate-500">
+                              Set status to Shortlisted and save to enable referral creation.
+                            </p>
+                          )}
+                        </>
+                      )}
+
+                      {canCreateReferral && (
+                        <button
+                          type="button"
+                          onClick={() => setReferralTarget({ ...application, applicationId })}
+                          className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 px-5 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                        >
+                          Create Referral
+                        </button>
+                      )}
                     </div>
                   </article>
                 )
@@ -367,6 +349,14 @@ const ViewApplications = () => {
             </section>
           )}
         </div>
+
+        <CreateReferralModal
+          application={referralTarget}
+          isOpen={Boolean(referralTarget)}
+          isSubmitting={creatingReferral}
+          onClose={() => setReferralTarget(null)}
+          onSubmit={handleCreateReferral}
+        />
       </main>
   )
 }

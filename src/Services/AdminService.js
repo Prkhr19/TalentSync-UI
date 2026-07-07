@@ -86,7 +86,7 @@ export const getJobApplications = async (jobId) => {
 
 export const getAllApplications = async () => {
   try {
-    const response = await api.get('/admin/applications')
+    const response = await api.get('/admin/applications', { skipAuthRedirect: true })
     const payload = response.data?.data || response.data
     const list = Array.isArray(payload)
       ? payload
@@ -96,7 +96,8 @@ export const getAllApplications = async () => {
       return list.map((application) => normalizeApplication(application))
     }
   } catch (requestError) {
-    if (requestError.response?.status !== 404) {
+    const status = requestError.response?.status
+    if (status !== 404 && status !== 401) {
       console.warn('GET /admin/applications unavailable, falling back to per-job aggregation.', requestError)
     }
   }
