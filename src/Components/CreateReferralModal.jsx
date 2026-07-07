@@ -7,8 +7,6 @@ const initialForm = {
   remarks: '',
   referredDate: '',
   followUpDate: '',
-  interviewDate: '',
-  joiningDate: '',
 }
 
 const inputClassName =
@@ -74,8 +72,6 @@ const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSub
       remarks: form.remarks.trim() || undefined,
       referredDate: form.referredDate || undefined,
       followUpDate: form.followUpDate || undefined,
-      interviewDate: form.interviewDate || undefined,
-      joiningDate: form.joiningDate || undefined,
     })
   }
 
@@ -173,8 +169,6 @@ const CreateReferralModal = ({ application, isOpen, isSubmitting, onClose, onSub
             {[
               ['referredDate', 'Referred Date'],
               ['followUpDate', 'Follow-up Date'],
-              ['interviewDate', 'Interview Date'],
-              ['joiningDate', 'Joining Date'],
             ].map(([name, label]) => (
               <div key={name}>
                 <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor={name}>

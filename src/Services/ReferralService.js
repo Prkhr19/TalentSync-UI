@@ -1,6 +1,25 @@
 import api from '../Api/Axios'
-import { getAuthHeaders, getStoredAuthToken } from '../utils/auth'
+import { getStoredAuthToken, isJwtExpired } from '../utils/auth'
 import { normalizeReferral } from '../utils/normalizers'
+
+const createAuthError = (message) => {
+  const authError = new Error(message)
+  authError.response = { status: 401, data: { error: message } }
+  return authError
+}
+
+const assertAuthenticatedRequest = () => {
+  const token = getStoredAuthToken()
+  if (!token) {
+    throw createAuthError('Authentication required. Please log in again as admin.')
+  }
+
+  if (isJwtExpired(token)) {
+    throw createAuthError('Your session has expired. Please log in again as admin.')
+  }
+
+  return token
+}
 
 const buildReferralPayload = (referralData) => {
   const payload = {
@@ -19,14 +38,6 @@ const buildReferralPayload = (referralData) => {
 
   if (referralData.followUpDate) {
     payload.followUpDate = referralData.followUpDate
-  }
-
-  if (referralData.interviewDate) {
-    payload.interviewDate = referralData.interviewDate
-  }
-
-  if (referralData.joiningDate) {
-    payload.joiningDate = referralData.joiningDate
   }
 
   return payload
@@ -53,20 +64,12 @@ export const createReferral = async (applicationId, referralData) => {
     throw new Error('Application ID is required to create a referral.')
   }
 
-  const token = getStoredAuthToken()
-  if (!token) {
-    const authError = new Error('You are not logged in. Please sign in again.')
-    authError.response = { status: 401, data: { message: 'Authentication required. Please log in again.' } }
-    throw authError
-  }
+  assertAuthenticatedRequest()
 
   const response = await api.post(
     `/admin/applications/${applicationId}/referrals`,
     buildReferralPayload(referralData),
-    {
-      skipAuthRedirect: true,
-      headers: getAuthHeaders(),
-    }
+    { skipAuthRedirect: true }
   )
   return response.data?.data || response.data
 }

@@ -3,7 +3,6 @@ import { login } from '../../Services/AuthService'
 import { setAuthSession } from '../../Api/Axios'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
-import { extractLoginCredentials } from '../../utils/auth'
 
 const Login = () => {
   const [email, setEmail] = useState("")
@@ -29,9 +28,9 @@ const Login = () => {
       password
     }
 
-    const response = await login(loginData)
-    const payload = response?.data && typeof response.data === 'object' ? response.data : response
-    const { token, role } = extractLoginCredentials(payload)
+    const { credentials, body } = await login(loginData)
+    const { token, role } = credentials
+    const payload = body
 
     const name =
       payload?.name ||
@@ -57,7 +56,7 @@ const Login = () => {
     }
 
     setAuthSession(token, role)
-    localStorage.setItem("userEmail", email);
+    localStorage.setItem("userEmail", email)
     if (resolvedName) {
       localStorage.setItem("userName", resolvedName);
     }

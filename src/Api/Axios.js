@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getAuthHeaders, getStoredAuthToken, normalizeAuthToken } from '../utils/auth'
+import { applyAuthHeader, getStoredAuthToken, normalizeAuthRole, normalizeAuthToken } from '../utils/auth'
 
 const AUTH_STORAGE_KEYS = [
   'token',
@@ -30,10 +30,11 @@ export const clearAuthSession = () => {
 
 export const setAuthSession = (token, role) => {
   const normalizedToken = normalizeAuthToken(token)
-  if (!normalizedToken) return
+  const normalizedRole = normalizeAuthRole(role)
+  if (!normalizedToken || !normalizedRole) return
 
   localStorage.setItem('token', normalizedToken)
-  localStorage.setItem('role', role)
+  localStorage.setItem('role', normalizedRole)
   api.defaults.headers.common.Authorization = `Bearer ${normalizedToken}`
 }
 
@@ -44,17 +45,7 @@ if (savedToken) {
 }
 
 api.interceptors.request.use(
-  (config) => {
-    const token = getStoredAuthToken()
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    } else {
-      delete config.headers.Authorization
-    }
-
-    return config
-  },
+  (config) => applyAuthHeader(config),
   (error) => Promise.reject(error)
 )
 

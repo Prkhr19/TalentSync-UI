@@ -15,8 +15,15 @@ export const decodeJwtPayload = (token) => {
 export const normalizeAuthToken = (token) => {
   if (!token || typeof token !== 'string') return null
 
-  const trimmed = token.trim()
+  let trimmed = token.trim()
   if (!trimmed) return null
+
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    trimmed = trimmed.slice(1, -1).trim()
+  }
 
   return trimmed.startsWith('Bearer ') ? trimmed.slice(7).trim() : trimmed
 }
@@ -76,6 +83,34 @@ export const getStoredAuthToken = () => normalizeAuthToken(localStorage.getItem(
 export const getAuthHeaders = () => {
   const token = getStoredAuthToken()
   return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+export const isJwtExpired = (token) => {
+  const payload = decodeJwtPayload(token)
+  if (!payload.exp) return false
+  return Date.now() >= payload.exp * 1000
+}
+
+export const applyAuthHeader = (config) => {
+  const token = getStoredAuthToken()
+
+  if (!config.headers) {
+    config.headers = {}
+  }
+
+  if (token) {
+    if (typeof config.headers.set === 'function') {
+      config.headers.set('Authorization', `Bearer ${token}`)
+    } else {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+  } else if (typeof config.headers.delete === 'function') {
+    config.headers.delete('Authorization')
+  } else {
+    delete config.headers.Authorization
+  }
+
+  return config
 }
 
 export const rolesMatch = (actualRole, expectedRole) => {

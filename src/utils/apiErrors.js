@@ -1,8 +1,8 @@
 export const getApiErrorMessage = (requestError, fallbackMessage) => {
   const status = requestError.response?.status
   const serverMessage =
-    requestError.response?.data?.message ||
     requestError.response?.data?.error ||
+    requestError.response?.data?.message ||
     requestError.message
 
   if (status === 401) {

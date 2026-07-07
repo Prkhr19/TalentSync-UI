@@ -1,8 +1,16 @@
 import api from "../Api/Axios"
+import { extractLoginCredentials } from "../utils/auth"
 
 export const login = async (loginData) => {
   const response = await api.post("/auth/login", loginData)
-  return response.data?.data || response.data
+  const body = response.data?.data || response.data
+  const credentials = extractLoginCredentials(body)
+
+  if (!credentials.token || !credentials.role) {
+    throw new Error("Login response did not contain token or role")
+  }
+
+  return { credentials, body }
 }
 
 export const signup = async (signupData) => {
