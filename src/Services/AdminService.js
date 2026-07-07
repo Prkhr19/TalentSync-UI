@@ -79,37 +79,66 @@ export const getJobApplications = async (jobId) => {
     ? payload
     : payload?.applications || payload?.content || []
 
+  const pickFirst = (...values) => values.find((value) => value !== undefined && value !== null && value !== '')
+
   return list.map((application) => {
     const candidate = application.candidate || application.candidateDetails || {}
+    const profile = candidate.professionalInformation || candidate.profile || application.professionalInformation || {}
+    const resume = application.resume || candidate.resume || {}
+    const rawSkills = pickFirst(application.skills, candidate.skills, profile.skills)
+    const normalizedSkills = Array.isArray(rawSkills)
+      ? rawSkills
+      : typeof rawSkills === 'string'
+        ? rawSkills
+        : Array.isArray(rawSkills?.skills)
+          ? rawSkills.skills
+          : rawSkills?.name || rawSkills?.value || ''
 
     return {
       ...application,
       applicationId: application.applicationId || application.id,
-      name:
-        application.name ||
-        application.fullName ||
-        application.candidateName ||
-        candidate.fullName ||
-        candidate.name ||
-        'Candidate',
-      status: application.status || application.applicationStatus,
-      appliedAt: application.appliedAt || application.createdAt || application.appliedDate,
-      experience:
-        application.experience ||
-        application.totalExperience ||
-        candidate.experience ||
+      name: pickFirst(
+        application.name,
+        application.fullName,
+        application.candidateName,
+        candidate.fullName,
+        candidate.name,
+        profile.fullName,
+        profile.name,
+        'Candidate'
+      ),
+      status: pickFirst(application.status, application.applicationStatus),
+      appliedAt: pickFirst(application.appliedAt, application.createdAt, application.appliedDate),
+      experience: pickFirst(
+        application.experience,
+        application.totalExperience,
+        candidate.experience,
         candidate.totalExperience,
-      education:
-        application.education ||
-        application.highestQualification ||
-        candidate.education ||
+        profile.experience,
+        profile.totalExperience
+      ),
+      education: pickFirst(
+        application.education,
+        application.highestQualification,
+        candidate.education,
         candidate.highestQualification,
-      skills: application.skills || candidate.skills,
-      resumeUrl:
-        application.resumeUrl ||
-        application.resumePath ||
-        candidate.resumeUrl ||
+        profile.education,
+        profile.highestQualification
+      ),
+      skills: normalizedSkills,
+      resumeUrl: pickFirst(
+        application.resumeUrl,
+        application.resumePath,
+        application.cvUrl,
+        candidate.resumeUrl,
         candidate.resumePath,
+        candidate.cvUrl,
+        profile.resumeUrl,
+        profile.resumePath,
+        resume.resumeUrl,
+        resume.fileUrl,
+        resume.secureUrl
+      ),
     }
   })
 }
