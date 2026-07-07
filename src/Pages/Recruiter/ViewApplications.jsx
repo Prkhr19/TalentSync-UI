@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
-import { getJobApplications } from '../../Services/AdminService'
+import { getJobApplications, updateApplicationStatus } from '../../Services/AdminService'
 import { getJobById } from '../../Services/JobService'
 
 const statusOptions = [
@@ -57,12 +57,30 @@ const getInitials = (name) => {
     .join('')
 }
 
+const selectClassName =
+  'w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-sky-100'
+
 const ViewApplications = () => {
   const { jobId } = useParams()
   const [job, setJob] = useState(null)
   const [applications, setApplications] = useState([])
+  const [statusDrafts, setStatusDrafts] = useState({})
+  const [savingId, setSavingId] = useState(null)
+  const [statusError, setStatusError] = useState('')
+  const [statusSuccess, setStatusSuccess] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+
+  const syncStatusDrafts = (list) => {
+    const drafts = {}
+    list.forEach((application) => {
+      const id = application.applicationId || application.id
+      if (id) {
+        drafts[id] = application.status || 'APPLIED'
+      }
+    })
+    setStatusDrafts(drafts)
+  }
 
   const loadData = () => {
     setLoading(true)
@@ -78,6 +96,7 @@ const ViewApplications = () => {
           ? applicationsResponse
           : applicationsResponse?.applications || applicationsResponse?.content || []
         setApplications(list)
+        syncStatusDrafts(list)
       })
       .catch((requestError) => {
         console.error('Error fetching applications:', requestError)
@@ -106,6 +125,7 @@ const ViewApplications = () => {
           ? applicationsResponse
           : applicationsResponse?.applications || applicationsResponse?.content || []
         setApplications(list)
+        syncStatusDrafts(list)
       } catch (requestError) {
         if (cancelled) return
         console.error('Error fetching applications:', requestError)
@@ -120,6 +140,42 @@ const ViewApplications = () => {
       cancelled = true
     }
   }, [jobId])
+
+  const handleStatusChange = (applicationId, status) => {
+    setStatusDrafts((current) => ({ ...current, [applicationId]: status }))
+    setStatusError('')
+    setStatusSuccess('')
+  }
+
+  const handleSaveStatus = async (applicationId) => {
+    const status = statusDrafts[applicationId]
+    if (!status) return
+
+    setSavingId(applicationId)
+    setStatusError('')
+    setStatusSuccess('')
+
+    try {
+      await updateApplicationStatus(applicationId, status)
+      setApplications((current) =>
+        current.map((application) =>
+          (application.applicationId || application.id) === applicationId
+            ? { ...application, status }
+            : application
+        )
+      )
+      setStatusSuccess('Application status updated successfully.')
+    } catch (requestError) {
+      const message =
+        requestError.response?.data?.message ||
+        requestError.response?.data?.error ||
+        'Failed to update application status. Please try again.'
+      setStatusError(message)
+      console.error('Error updating application status:', requestError)
+    } finally {
+      setSavingId(null)
+    }
+  }
 
   return (
       <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top,_rgba(186,230,253,0.32),_transparent_34%),linear-gradient(180deg,#f8fafc_0%,#eef6fb_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-14">
@@ -204,11 +260,25 @@ const ViewApplications = () => {
             </section>
           )}
 
+          {statusError && (
+            <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+              {statusError}
+            </div>
+          )}
+
+          {statusSuccess && (
+            <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+              {statusSuccess}
+            </div>
+          )}
+
           {!loading && !error && applications.length > 0 && (
             <section className="mt-8 grid gap-5 lg:grid-cols-2">
               {applications.map((application) => {
                 const applicationId = application.applicationId || application.id
                 const candidateName = application.candidateName || application.name || application.fullName || 'Candidate'
+                const selectedStatus = statusDrafts[applicationId] ?? application.status ?? 'APPLIED'
+                const hasStatusChange = selectedStatus !== application.status
 
                 return (
                   <article
@@ -261,6 +331,35 @@ const ViewApplications = () => {
                         <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Job Title</p>
                         <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">{application.jobTitle || job?.title || 'Not available'}</p>
                       </div>
+                    </div>
+
+                    <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <label
+                        className="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-slate-500"
+                        htmlFor={`status-${applicationId}`}
+                      >
+                        Update application status
+                      </label>
+                      <select
+                        id={`status-${applicationId}`}
+                        value={selectedStatus}
+                        onChange={(event) => handleStatusChange(applicationId, event.target.value)}
+                        className={selectClassName}
+                      >
+                        {statusOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveStatus(applicationId)}
+                        disabled={savingId === applicationId || !hasStatusChange}
+                        className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {savingId === applicationId ? 'Saving...' : 'Save Status'}
+                      </button>
                     </div>
                   </article>
                 )

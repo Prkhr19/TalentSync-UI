@@ -169,3 +169,8 @@ export const getCandidateById = async (candidateId) => {
   const response = await api.get(`/admin/candidates/${candidateId}`)
   return response.data?.data || response.data
 }
+
+export const updateApplicationStatus = async (applicationId, status) => {
+  const response = await api.patch(`/admin/applications/${applicationId}/status`, { status })
+  return response.data?.data || response.data
+}
