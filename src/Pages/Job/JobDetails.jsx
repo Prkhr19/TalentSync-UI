@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getJobById, saveJob } from '../../Services/JobService'
+import { addSavedJobToCache, getJobById, isJobSaved, saveJob } from '../../Services/JobService'
 import { ROUTES } from '../../Routes/Routes'
 
 const formatLabel = (value) => {
@@ -17,8 +17,13 @@ const JobDetails = () => {
   const [error, setError] = useState('')
   const [saveMessage, setSaveMessage] = useState('')
   const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
   const { id } = useParams()
   const isCandidate = localStorage.getItem('role') === 'CANDIDATE'
+
+  useEffect(() => {
+    setSaved(isJobSaved(id))
+  }, [id])
 
   useEffect(() => {
     getJobById(id)
@@ -51,6 +56,8 @@ const JobDetails = () => {
     setSaveMessage('')
     try {
       const response = await saveJob(job.id)
+      addSavedJobToCache(job)
+      setSaved(true)
       setSaveMessage(typeof response === 'string' ? response : response?.message || 'Job successfully saved')
     } catch (requestError) {
       setSaveMessage(requestError.response?.data?.error || 'Could not save this job.')
@@ -139,8 +146,16 @@ const JobDetails = () => {
                       disabled={saving}
                       className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950 disabled:opacity-60"
                     >
-                      {saving ? 'Saving…' : 'Save Job'}
+                      {saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save Job'}
                     </button>
+                  )}
+                  {isCandidate && (
+                    <Link
+                      to={ROUTES.CANDIDATE_SAVED_JOBS}
+                      className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950"
+                    >
+                      View Saved Jobs
+                    </Link>
                   )}
                   <Link to={ROUTES.JOBS} className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-950">Back to jobs</Link>
                 </div>

@@ -58,6 +58,11 @@ const Navbar = () => {
                   Applications
                 </Link>
               )}
+              {isCandidate && (
+                <Link to={ROUTES.CANDIDATE_SAVED_JOBS} className="hidden transition hover:text-slate-900 sm:inline">
+                  Saved Jobs
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={handleLogout}

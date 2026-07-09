@@ -21,6 +21,7 @@ import AdminApplications from './Pages/Recruiter/AdminApplications.jsx'
 import AdminReferrals from './Pages/Recruiter/AdminReferrals.jsx'
 import AdminSettings from './Pages/Recruiter/AdminSettings.jsx'
 import CandidateReferrals from './Pages/Candidate/CandidateReferrals.jsx'
+import SavedJobs from './Pages/Candidate/SavedJobs.jsx'
 import PrivacyPolicy from './Pages/Legal/PrivacyPolicy.jsx'
 import TermsAndConditions from './Pages/Legal/TermsAndConditions.jsx'
 import Contact from './Pages/Legal/Contact.jsx'
@@ -42,6 +43,7 @@ const App = () => {
         <Route path={ROUTES.UPDATE_PROFILE} element={<ProtectedRoute allowedRole="CANDIDATE"><CandidateUpdateProfile /></ProtectedRoute>} />
         <Route path={ROUTES.APPPLICATION_STATUS} element={<ProtectedRoute allowedRole="CANDIDATE"><JobApplicationStatus /></ProtectedRoute>} />
         <Route path={ROUTES.CANDIDATE_REFERRALS} element={<ProtectedRoute allowedRole="CANDIDATE"><CandidateReferrals /></ProtectedRoute>} />
+        <Route path={ROUTES.CANDIDATE_SAVED_JOBS} element={<ProtectedRoute allowedRole="CANDIDATE"><SavedJobs /></ProtectedRoute>} />
         <Route path={ROUTES.APPLY_JOBS} element={<ProtectedRoute allowedRole="CANDIDATE"><ApplyJobs /></ProtectedRoute>} />
         <Route path={ROUTES.CREATE_COMPANY} element={<ProtectedRoute allowedRole="ADMIN"><CreateCompany /></ProtectedRoute>} />
         <Route path={ROUTES.CREATE_JOB} element={<ProtectedRoute allowedRole="ADMIN"><CreateJob /></ProtectedRoute>} />

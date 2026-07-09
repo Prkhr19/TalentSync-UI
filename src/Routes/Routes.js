@@ -9,6 +9,7 @@ export const ROUTES = {
   UPDATE_PROFILE: '/candidate/profile',
   APPPLICATION_STATUS: '/candidate/applicationStatus',
   CANDIDATE_REFERRALS: '/candidate/referrals',
+  CANDIDATE_SAVED_JOBS: '/candidate/saved-jobs',
   CREATE_COMPANY: '/admin/company',
   CREATE_JOB: '/admin/jobs/create',
   APPLY_JOBS: '/candidate/jobs/:jobId/apply',

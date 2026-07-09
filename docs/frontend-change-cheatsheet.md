@@ -130,6 +130,64 @@ This is a revision-friendly summary of the important frontend changes made, with
 
 ---
 
+## 7) Candidate Resume File Upload (PDF)
+
+### What gets uploaded
+- Only **resume PDF** upload exists in the frontend (no generic file-upload component).
+- Route: `/candidate/profile` → `CandidateUpdateProfile.jsx`
+- Service: `CandidateService.uploadResume()`
+
+### End-to-end flow
+1. User selects a PDF using `<input type="file" accept="application/pdf" />`
+2. Client validates:
+   - `file.type === 'application/pdf'`
+   - `file.size <= 5MB`
+3. File is stored in React state as `resumeFile` (upload starts only on submit)
+4. On **Save Profile**:
+   - `POST /candidate/resume` with `multipart/form-data` first (upload)
+   - then `PUT /candidate/profile` with JSON (profile fields)
+5. Backend stores the file (Cloudinary) and returns metadata (`fileName`)
+6. Admins view the resume via `resumeUrl` / mapped resume fields in `normalizers.js`
+
+### UI + validation (CandidateUpdateProfile.jsx)
+- `handleFileChange` checks PDF type and 5MB size before saving to `resumeFile`.
+- Submit is blocked if it’s the first time and no existing resume exists:
+  - if `!resumeFile && !existingResumeName` → show error.
+
+### Service layer (CandidateService.js)
+- Uses `FormData`:
+  - `formData.append('resume', resumeFile)` (key MUST match backend `@RequestParam("resume")`)
+- Upload call:
+  - `api.post('/candidate/resume', formData, { headers: { 'Content-Type': 'multipart/form-data' } })`
+
+### Backend contract (ResumeController)
+| Method | Endpoint | Body | Purpose |
+|--------|----------|------|---------|
+| `POST` | `/candidate/resume` | `multipart/form-data` (field `resume`) | Upload PDF |
+| `GET` | `/candidate/resume` | — | Resume metadata (`fileName`) |
+| `DELETE` | `/candidate/resume` | — | Remove resume |
+| `PUT` | `/candidate/profile` | JSON | Profile fields (no file) |
+
+### Auth
+- Axios interceptor attaches `Authorization: Bearer <token>` on requests.
+- Candidate pages are protected by `ProtectedRoute` for `allowedRole="CANDIDATE"`.
+
+### Prefill on page load
+- `Promise.all([getCandidateProfile(), getResumeMetadata()])`
+- Profile → form fields via `mapProfileToForm`
+- Resume → only metadata (`existingResumeName`), not the binary file in the input
+- `getCandidateProfile` uses `skipAuthRedirect: true` to avoid false session logout
+
+### Interview one-liner
+> Candidate selects a PDF → client validates type/size → wraps it in `FormData` under `resume` → uploads via `POST /candidate/resume` with JWT → then saves profile fields via `PUT /candidate/profile` as JSON.
+
+### Files involved
+- `src/Pages/Candidate/CandidateUpdateProfile.jsx`
+- `src/Services/CandidateService.js`
+- `src/Api/Axios.js`
+- `src/utils/normalizers.js`
+
+---
 ## Files Touched (High Importance)
 
 - `src/Routes/HomeRedirect.jsx`
@@ -167,5 +225,6 @@ This is a revision-friendly summary of the important frontend changes made, with
 - [ ] Candidate can submit profile with `currentCTC = 0`.
 - [ ] Update profile form pre-fills on revisit.
 - [ ] No false session-expired redirect while profile preloads.
+- [ ] Candidate resume upload (PDF) sends `multipart/form-data` with field name `resume`.
 - [ ] Admin applications page shows real candidate name and resume links when present in API data.
 
