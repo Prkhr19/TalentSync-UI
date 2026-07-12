@@ -2,12 +2,6 @@ import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
 
 const CDashboard = () => {
-  const summaryCards = [
-    { label: 'Profile readiness', value: 'High' },
-    { label: 'Open applications', value: '03' },
-    { label: 'Recommended jobs', value: '12' },
-  ]
-
   const nextSteps = [
     'Finish your profile to improve visibility with hiring teams.',
     'Apply to two new roles today to keep momentum going.',
@@ -83,15 +77,6 @@ const CDashboard = () => {
                     Saved Jobs
                   </Link>
                 </div>
-
-                <div className="mt-8 grid gap-4 sm:grid-cols-3">
-                  {summaryCards.map((card) => (
-                    <div key={card.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-sm font-medium text-slate-500">{card.label}</p>
-                      <p className="mt-2 text-2xl font-semibold text-slate-950">{card.value}</p>
-                    </div>
-                  ))}
-                </div>
               </div>
 
               <div className="relative rounded-[2rem] border border-white/80 bg-slate-900 p-7 text-white shadow-[0_20px_60px_rgba(15,23,42,0.16)] sm:p-8">
@@ -105,24 +90,18 @@ const CDashboard = () => {
                     A complete profile and active applications help you stay ready for the right opportunity.
                   </p>
 
-                  <div className="mt-6 space-y-4">
+                  <div className="mt-6 space-y-3">
                     <div className="rounded-2xl border border-slate-700 bg-white/5 p-4">
-                      <p className="text-sm text-slate-300">Profile strength</p>
-                      <div className="mt-3 h-2 rounded-full bg-slate-700">
-                        <div className="h-2 w-[82%] rounded-full bg-gradient-to-r from-sky-300 to-emerald-300" />
-                      </div>
-                      <p className="mt-3 text-sm text-slate-300">82% complete</p>
+                      <p className="text-sm text-slate-300">Tip</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-200">
+                        Update your profile and resume before applying so recruiters see your latest details.
+                      </p>
                     </div>
-
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-2xl border border-slate-700 bg-white/5 p-4">
-                        <p className="text-sm text-slate-300">Next review</p>
-                        <p className="mt-2 text-lg font-semibold">Pending applications</p>
-                      </div>
-                      <div className="rounded-2xl border border-slate-700 bg-white/5 p-4">
-                        <p className="text-sm text-slate-300">Job discovery</p>
-                        <p className="mt-2 text-lg font-semibold">Fresh roles this week</p>
-                      </div>
+                    <div className="rounded-2xl border border-slate-700 bg-white/5 p-4">
+                      <p className="text-sm text-slate-300">Next action</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-200">
+                        Browse open roles, save interesting jobs, and track applications from this dashboard.
+                      </p>
                     </div>
                   </div>
                 </div>
