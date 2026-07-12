@@ -22,6 +22,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 })
+console.log("API BASE URL:", import.meta.env.VITE_API_BASE_URL);
 
 export const clearAuthSession = () => {
   AUTH_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key))
