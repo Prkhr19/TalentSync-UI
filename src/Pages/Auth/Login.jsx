@@ -3,6 +3,7 @@ import { login } from '../../Services/AuthService'
 import { setAuthSession } from '../../Api/Axios'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
+import { getLoginErrorMessage } from '../../utils/apiErrors'
 
 const Login = () => {
   const [email, setEmail] = useState("")
@@ -78,9 +79,9 @@ const Login = () => {
     } else {
       navigate(ROUTES.HOME)
     }
-  }catch(error){
-    setError("Invalid email or password");
-    console.error("Login error: ", error);
+  } catch (error) {
+    setError(getLoginErrorMessage(error))
+    console.error('Login error: ', error)
   }
 
 }

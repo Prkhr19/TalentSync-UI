@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { signup } from '../../Services/AuthService'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../Routes/Routes'
+import { getApiErrorMessage } from '../../utils/apiErrors'
 
 const Signup = () => {
   const [email, setEmail] = useState('')
@@ -32,7 +33,7 @@ const Signup = () => {
       localStorage.setItem('pendingSignupEmail', email)
       navigate(ROUTES.LOGIN)
     } catch (requestError) {
-      setError('Signup failed. Please try again.')
+      setError(getApiErrorMessage(requestError, 'Signup failed. Please try again.'))
       console.error('Signup error: ', requestError)
     }
   }
